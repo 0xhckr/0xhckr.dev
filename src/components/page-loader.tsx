@@ -108,8 +108,13 @@ export const PageLoader = ({ children }: { children: React.ReactNode }) => {
     <div>
       {/* Grid of overlaid squares */}
       {squares && squares.length > 0 && children}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden h-screen w-screen z-20">
-        <div className="relative pointer-events-none">{squares}</div>
+      <div
+        className={cn(
+          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden h-screen w-screen z-20",
+          !isLoading && "pointer-events-none"
+        )}
+      >
+        <div className="relative">{squares}</div>
         <div
           className={cn(
             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold loading-text transition-all duration-300",

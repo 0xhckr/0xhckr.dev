@@ -10,9 +10,9 @@
     "format": "biome format --write"
   },
   "engines": {
-    "node": "22",
-    "pnpm": "10"
+    "node": "22"
   },
+  "packageManager": "pnpm@10.22.0",
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "clsx": "^2.1.1",

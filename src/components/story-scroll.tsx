@@ -82,12 +82,12 @@ const story: { id: string; lines: Line[] }[] = [
       { text: "Get in touch." },
       { text: "" },
       {
-        text: "github.com/0xhckr",
+        text: "github/0xhckr",
         href: "https://github.com/0xhckr",
         markdownType: "link",
       },
       {
-        text: "x.com/0xhckrdev",
+        text: "x/0xhckrdev",
         href: "https://x.com/0xhckrdev",
         markdownType: "link",
       },
@@ -97,7 +97,7 @@ const story: { id: string; lines: Line[] }[] = [
         markdownType: "link",
       },
       {
-        text: "hello@0xhckr.dev",
+        text: "email",
         href: "mailto:hello@0xhckr.dev",
         markdownType: "link",
       },

@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 0xhckr.dev
+
+Personal portfolio built with Next.js, React, Tailwind CSS, and GSAP.
+
+## Stack
+
+- **Next.js** — App Router
+- **React**
+- **Tailwind CSS** — CSS-first config via `@theme inline`
+- **GSAP** — animations
+- **Biome** — linting and formatting
+- **Nix** — dev shell via `flake.nix`
+- **pnpm** — package management
 
 ## Getting Started
 
-First, run the development server:
+Requires **Node.js 22** and **pnpm**.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Alternatively, enter the Nix dev shell:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+direnv allow
+```
 
-## Learn More
+This provides `pnpm`, `nodejs_22`, and `biome`.
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command          | Description            |
+| ---------------- | ---------------------- |
+| `pnpm dev`       | Start dev server       |
+| `pnpm build`     | Production build       |
+| `pnpm start`     | Start production server|
+| `pnpm lint`      | Run Biome linter       |
+| `pnpm format`    | Format with Biome      |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+  app/             # App Router pages and layout
+  components/      # React components
+  lib/             # Utilities
+public/            # Static assets
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Internal imports use the `~/` path alias mapped to `./src/*`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+*more things to come~!*

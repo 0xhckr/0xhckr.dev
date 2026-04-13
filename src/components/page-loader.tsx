@@ -100,6 +100,7 @@ export const PageLoader = ({ children }: { children: React.ReactNode }) => {
       delay: 0.5,
       onComplete: () => {
         setIsLoading(false);
+        window.dispatchEvent(new CustomEvent("page-ready"));
       },
     });
   }, [squares]);

@@ -19,6 +19,41 @@
   }
 }
 
+.tw-char {
+  opacity: 0;
+}
+
+.tw-content {
+  font-family: var(--font-geist-mono);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.tw-block {
+  overflow: hidden;
+}
+
+.tw-cursor {
+  position: absolute;
+  width: 0.7em;
+  height: 1.3em;
+  background: var(--foreground);
+  animation: blink 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

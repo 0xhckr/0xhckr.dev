@@ -20,10 +20,10 @@ export const PageLoader = ({ children }: { children: React.ReactNode }) => {
         const rand1 = Math.floor(Math.random() * Math.random() * 5);
         const rand2 = Math.floor(Math.random() * Math.random() * 25);
         const numberOfSquaresTotalVertical = Math.ceil(
-          window.innerHeight / 160
+          window.innerHeight / 160,
         );
         const numberOfSquaresTotalHorizontal = Math.ceil(
-          window.innerWidth / 160
+          window.innerWidth / 160,
         );
         const verticalOffset =
           Math.floor(index / Math.ceil(window.innerWidth / 160)) * 160;
@@ -85,7 +85,7 @@ export const PageLoader = ({ children }: { children: React.ReactNode }) => {
             </div>
           </Fragment>
         );
-      })
+      }),
     );
   }, []);
 
@@ -110,21 +110,27 @@ export const PageLoader = ({ children }: { children: React.ReactNode }) => {
       {/* Grid of overlaid squares */}
       {squares && squares.length > 0 && children}
       <div
+        aria-hidden="true"
         className={cn(
           "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden h-screen w-screen z-20",
-          !isLoading && "pointer-events-none"
+          !isLoading && "pointer-events-none",
         )}
       >
         <div className="relative">{squares}</div>
         <div
           className={cn(
-            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold loading-text transition-all duration-300",
-            isLoading ? "animate-pulse" : "opacity-0"
+            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold loading-text transition-all duration-300 border-none",
+            isLoading ? "animate-pulse" : "opacity-0",
           )}
         >
-          <h1>loading...</h1>
+          loading...
         </div>
       </div>
+      {isLoading && (
+        <div role="status" aria-live="polite" className="sr-only">
+          Loading
+        </div>
+      )}
     </div>
   );
 };

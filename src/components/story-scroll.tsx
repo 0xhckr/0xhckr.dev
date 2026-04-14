@@ -205,10 +205,10 @@ const TypewriterLine = ({
           : "span";
 
   const classes = cn("tw-char inline-block", {
-    "text-2xl sm:text-4xl font-bold text-[#003c3c]": markdownType === "h1",
+    "text-2xl sm:text-4xl font-bold text-[#003c3c] dark:text-[#5eead4]": markdownType === "h1",
     "text-xl sm:text-3xl font-semibold": markdownType === "h2",
     "text-lg sm:text-2xl font-medium": markdownType === "h3",
-    "underline decoration-foreground/30 hover:decoration-foreground/70 transition-colors text-[#468189]":
+    "underline decoration-foreground/30 hover:decoration-foreground/70 transition-colors text-[#2e6b7b] dark:text-[#7dd3e0]":
       markdownType === "link",
     "text-xs sm:text-sm text-[#6b7280]": markdownType === "comment",
   });
@@ -237,19 +237,46 @@ const TypewriterLine = ({
     </span>
   ));
   if (href) {
+    const isExternal = !href.startsWith("mailto:");
     return (
       <a
         href={href}
-        target={href.startsWith("mailto:") ? undefined : "_blank"}
-        rel="noopener noreferrer"
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         className="inline underline underline-offset-4 decoration-foreground/30 hover:decoration-foreground/70 transition-colors"
+        aria-label={text}
       >
         {chars}
+        <span className="sr-only">{text}</span>
       </a>
     );
   }
-  return <Component className={cn("inline")}>{chars}</Component>;
+  return (
+    <Component className={cn("inline")}>{chars}</Component>
+  );
 };
+
+const ScreenReaderContent = () => (
+  <div className="sr-only">
+    <h2>{story[0].lines.find((l) => l.markdownType === "h1")?.text}</h2>
+    {story.map((section) => (
+      <section key={section.id}>
+        {section.lines
+          .filter((l) => l.text.length > 0 && l.markdownType !== "h1")
+          .map((line, i) => {
+            if (line.href) {
+              return (
+                <p key={i}>
+                  <a href={line.href}>{line.text}</a>
+                </p>
+              );
+            }
+            return <p key={i}>{line.text}</p>;
+          })}
+      </section>
+    ))}
+  </div>
+);
 export const StoryScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -389,6 +416,8 @@ export const StoryScroll = () => {
 
   return (
     <div ref={containerRef} className="relative">
+      <ScreenReaderContent />
+      <main id="main-content" tabIndex={-1}>
       <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
         <div className="tw-content relative w-full max-w-2xl overflow-hidden">
           {story.map((section, sIdx) => (
@@ -412,10 +441,11 @@ export const StoryScroll = () => {
               ))}
             </div>
           ))}
-          <span ref={cursorRef} className={cn("tw-cursor")} />
+          <span ref={cursorRef} className={cn("tw-cursor")} aria-hidden="true" />
         </div>
       </div>
       <div style={{ height: `${totalScroll}px` }} />
+      </main>
     </div>
   );
 };

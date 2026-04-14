@@ -25,8 +25,17 @@
 
 .tw-content {
   font-family: var(--font-geist-mono);
-  font-size: 1.125rem;
-  line-height: 1.75;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (min-width: 640px) {
+  .tw-content {
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
 }
 
 .tw-block {
@@ -40,6 +49,12 @@
   background: var(--foreground);
   animation: blink 1.5s ease-in-out infinite;
   pointer-events: none;
+}
+
+@media (max-width: 639px) {
+  .tw-cursor {
+    height: 1.1em;
+  }
 }
 
 @keyframes blink {

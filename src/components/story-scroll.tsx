@@ -193,7 +193,7 @@ const TypewriterLine = ({
   href?: string;
   blank: boolean;
 }) => {
-  if (blank) return <div className="h-7" />;
+  if (blank) return <div className="h-5 sm:h-7" />;
 
   const Component =
     markdownType === "h1"
@@ -205,12 +205,12 @@ const TypewriterLine = ({
           : "span";
 
   const classes = cn("tw-char inline-block", {
-    "text-4xl font-bold text-[#003c3c]": markdownType === "h1",
-    "text-3xl font-semibold": markdownType === "h2",
-    "text-2xl font-medium": markdownType === "h3",
+    "text-2xl sm:text-4xl font-bold text-[#003c3c]": markdownType === "h1",
+    "text-xl sm:text-3xl font-semibold": markdownType === "h2",
+    "text-lg sm:text-2xl font-medium": markdownType === "h3",
     "underline decoration-foreground/30 hover:decoration-foreground/70 transition-colors text-[#468189]":
       markdownType === "link",
-    "text-sm text-[#6b7280]": markdownType === "comment",
+    "text-xs sm:text-sm text-[#6b7280]": markdownType === "comment",
   });
 
   const prefix =
@@ -389,8 +389,8 @@ export const StoryScroll = () => {
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-8">
-        <div className="tw-content relative w-full max-w-2xl">
+      <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
+        <div className="tw-content relative w-full max-w-2xl overflow-hidden">
           {story.map((section, sIdx) => (
             <div
               key={section.id}

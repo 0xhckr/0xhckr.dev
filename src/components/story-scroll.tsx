@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/util";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -284,6 +284,27 @@ export const StoryScroll = () => {
   const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const cursorRef = useRef<HTMLSpanElement>(null);
   const scrollReadyRef = useRef(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
+  useEffect(() => {
+    let dismissed = false;
+    const onReady = () => {
+      window.removeEventListener("page-ready", onReady);
+      const timer = setTimeout(() => {
+        if (!dismissed && window.scrollY === 0) setShowScrollHint(true);
+      }, 750);
+      const onScroll = () => {
+        dismissed = true;
+        setShowScrollHint(false);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+    };
+    window.addEventListener("page-ready", onReady);
+    return () => {
+      window.removeEventListener("page-ready", onReady);
+      setShowScrollHint(false);
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -448,6 +469,19 @@ export const StoryScroll = () => {
       </div>
       <div style={{ height: `${totalScroll}px` }} />
       </main>
+      <div
+        className={cn(
+          "fixed bottom-8 left-1/2 -translate-x-1/2 z-30 transition-all duration-500",
+          showScrollHint
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-2 pointer-events-none",
+        )}
+        aria-hidden="true"
+      >
+        <span className="animate-pulse text-xs sm:text-sm text-foreground/50 tracking-wide select-none">
+          scroll down
+        </span>
+      </div>
     </div>
   );
 };

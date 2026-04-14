@@ -13,10 +13,42 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://0xhckr.dev";
+
 export const metadata: Metadata = {
-  title: "0xhckr",
+  title: "0xhckr | Mohammad Al-Ahdal | Software Developer",
   description:
     "Software developer, homelab enthusiast, and a lover of Nix. Making things by smashing my hands on my keyboard.",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    title: "0xhckr | Mohammad Al-Ahdal | Software Developer",
+    description:
+      "Software developer, homelab enthusiast, and a lover of Nix. Making things by smashing my hands on my keyboard.",
+    siteName: "0xhckr",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "0xhckr | Mohammad Al-Ahdal | Software Developer",
+    description:
+      "Software developer, homelab enthusiast, and a lover of Nix. Making things by smashing my hands on my keyboard.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +57,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Mohammad Al-Ahdal",
+              alternateName: "0xhckr",
+              url: "https://0xhckr.dev",
+              sameAs: [
+                "https://github.com/0xhckr",
+                "https://x.com/0xhckrdev",
+                "https://linkedin.com/in/mohammadalahdal",
+              ],
+              jobTitle: "Software Developer",
+              knowsAbout: [
+                "TypeScript",
+                "React",
+                "Rust",
+                "NixOS",
+                "Tailwind CSS",
+                "Next.js",
+              ],
+            }),
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

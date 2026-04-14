@@ -256,26 +256,28 @@ const TypewriterLine = ({
   );
 };
 
-const ScreenReaderContent = () => (
-  <div className="sr-only">
-    <h2>{story[0].lines.find((l) => l.markdownType === "h1")?.text}</h2>
-    {story.map((section) => (
-      <section key={section.id}>
-        {section.lines
-          .filter((l) => l.text.length > 0 && l.markdownType !== "h1")
-          .map((line, i) => {
-            if (line.href) {
-              return (
-                <p key={i}>
-                  <a href={line.href}>{line.text}</a>
-                </p>
-              );
-            }
-            return <p key={i}>{line.text}</p>;
-          })}
-      </section>
-    ))}
-  </div>
+const StoryContent = () => (
+  <noscript>
+    <article className="mx-auto max-w-2xl px-4 py-16 text-sm leading-relaxed text-gray-700 dark:text-gray-300 sm:px-8 sm:text-base">
+      <h1>{story[0].lines.find((l) => l.markdownType === "h1")?.text}</h1>
+      {story.map((section) => (
+        <section key={section.id}>
+          {section.lines
+            .filter((l) => l.text.length > 0 && l.markdownType !== "h1")
+            .map((line, i) => {
+              if (line.href) {
+                return (
+                  <p key={i}>
+                    <a href={line.href} target={line.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer">{line.text}</a>
+                  </p>
+                );
+              }
+              return <p key={i}>{line.text}</p>;
+            })}
+        </section>
+      ))}
+    </article>
+  </noscript>
 );
 export const StoryScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -416,7 +418,7 @@ export const StoryScroll = () => {
 
   return (
     <div ref={containerRef} className="relative">
-      <ScreenReaderContent />
+      <StoryContent />
       <main id="main-content" tabIndex={-1}>
       <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
         <div className="tw-content relative w-full max-w-2xl overflow-hidden">

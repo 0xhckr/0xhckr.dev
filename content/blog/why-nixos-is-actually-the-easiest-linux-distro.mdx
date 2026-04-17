@@ -1,0 +1,52 @@
+---
+title: Why NixOS is actually the easiest Linux distro
+description: Going from distrohopping and staying on macOS to daily driving NixOS within 3 days
+date: 2026-04-17
+---
+
+I'm writing this over a full year after finally moving to NixOS fulltime. The first commit was made on <time datetime="2025-03-09">March 9, 2025</time>. Prior to that, I'd been using various Linux distros both to test and to use as non-primary OSes (i.e. not the one that runs on my personal machine).
+
+Linux has always felt spiritually compatible with me. I love the ability to customize everything to my heart's content and love the fact that mostly everything is open source and the community is filled with like-minded individuals.
+
+Despite this affinity, however, I always primarily ran macOS on my MacBook Pro and owned an iPhone. I figured that Apple, the supposed king of privacy and hardware-software integration, would have my back.
+
+## The Apple Silicon Experience
+
+In late 2021, Apple released the MacBook Pro with the Apple Silicon M1 chip. Initial rumours suggested that this chip would revolutionize the computing landscape. In all fairness, it did and I believed it too. For my birthday I treated myself to a brand new shiny MacBook Pro and I wanted it to be properly future proof so I specced it out rather heavily.
+
+I loved that machine. It was fast, quiet, and put my desktop to shame (not in raw performance but rather in efficiency and the capabilities it offered). However, as time went on, I began to notice some growing pains. Most notably, the subtle slowing down of the system after a while. I bought a machine I expected to last for years through my abhorrent abuse of a system, but it didn't. It did way better than any other laptop would have but I was disappointed it didn't do more. I like keeping many tabs open, many programs open, and having well-customized workflows. I believe that removing as many small annoyances throughout the day allows me to exceed the 80% efficiency threshold I have otherwise. This led my MacBook Pro to idle at ~60% RAM usage due to the many different background processes and generally feel sluggish.
+
+Overall, in the end, it was great hardware, but the software (which is WAY better than the other mainstream alternative that shall not be named) was lacking in flexibility and this costed a lot of raw performance that was lost in the background. I looked at the ludicrously expensive machine and sat there dumbfounded, deliberating on if I should really be buying another top of the line MacBook Pro which was now priced about ~$1300 CAD more than my already top of the line MacBook Pro that I bought in 2021. 
+
+At this point, I'd been using Linux rather heavily for various servers and smaller deployments here and there. The experience was generally positive and most importantly, even with a rather dense set of installed and backgrounded programs, the system posted a solid ~15% RAM usage (this system having half the RAM as the MacBook Pro). This stark contrast in resource efficiency made the decision crystal clear: I had to start using Linux full-time - but what distro?
+
+## Distrohopping
+
+I started my Linux journey by hopping between several popular distros. I'd already installed and hated Ubuntu from years prior (note: all of these are for use as a personal pc; I love ubuntu as a server OS). We tried Fedora too, but dnf posed many issues with a lack of package availability - in fact that was the case with most distros I tried.
+
+Enter Arch Linux (and specifically, EndeavourOS, and later CachyOS, too). It was beautiful. It shipped slim, had all the packages under the sun, didn't treat me like a baby, and most importantly, it moved out of my way when it came to customizing my system.
+
+The only issue was the steeper learning curve. I'd say I'm a rather technical guy, but when I'm given instructions on how to get screensharing working on Arch Linux, I shouldn't be running into issues trying to install the screen sharing picker and having it clash with the one installed by CachyOS. This issue is a global issue, even on NixOS, but the issue is exacerbated by the inability to go back in time when you royally f*ck up.
+
+## Enter NixOS
+
+That was until I discovered NixOS. The moment I installed it, my entire perspective shifted. NixOS isn't just another Linux distribution - it's a completely different way of thinking about software management and system configuration. No longer did I have to redo my dotfiles every single time. No longer did I have to manually reinstall all my applications. And most importantly, no longer did I have to worry about my system breaking.
+
+Why and how does NixOS solve these problems? Simply put, it uses the Nix package manager and declarative configuration to make everything reproducible and safe. The language is arguably confusing and a steep learning curve at first (and it's not like the error logs when a nix build fails are any better). But despite the initial intimidation, the long-term benefits far outweigh the upfront learning curve. Once you get past the syntax, the power and stability you gain are unrivaled.
+
+In the past, I wouldn't have dreamed of installing tuigreet when gdm was working perfectly fine even though I'd want a more customizable login screen. With NixOS, I could declare this preference in my configuration file, and the system would handle the installation for me. Turns out, tuigreet broke screensharing and I didn't have time at the time to troubleshoot it. Fair enough, on NixOS, all I needed to do to revert was just boot into the previous generation of the system and run `git revert` and `rebuild` (which on my system is `nh os switch /home/hackr/nixos`).
+
+There's so many more nice things about NixOS that I write about in my guide at [thenix.guide](https://thenix.guide/).
+
+## Is this still the easiest Linux distro?
+
+With how AI has progressed as of recent, the learning curve has become less intimidating than ever before. I'm not too big a proponent of AI myself but I do think that while companies are heavily subsidizing AI inference, the tools available make learning new technologies significantly easier. It's a lot easier to ask dumb questions to AI than to search through documentation or forums, half of which have been taken down, half of which are buried so deep in the internet that finding them requires hours of digging, and without having to deal with the frustration of trying to get answers from people on Reddit.
+
+In short, yeah - NixOS is still the easiest Linux distro. Arguably for everyone, but especially for those who value stability, reproducibility, and the ability to recover from mistakes without losing data. 
+
+If you're ready to give it a try, head over to [NixOS](https://nixos.org/) and follow the installation instructions. It only takes a few minutes to get started, and you'll be amazed at how quickly you can set up a fully reproducible system. And if you need more convincing, check out my <del>manifesto</del> guide at [thenix.guide](https://thenix.guide/).
+
+## What do I use now?
+I currently run NixOS on 3 different machines and have a nix cache setup on my home NAS. To replace the MacBook Pro, I use a Framework 13. It's mostly because I'd love to support the project (and also I saw one in person and it does NOT look as ugly as it does online).
+
+I also run NixOS on my Desktop PC running all AMD hardware and my work laptop which has a 3070ti. Suffice it to say, no hiccups for me given any of my hardware but your mileage may vary.

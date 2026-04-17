@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { PageHeading } from "~/components/page-heading";
 import { getAllSlugs, getPostBySlug } from "~/lib/blog";
+import { generatePageMetadata } from "~/lib/metadata";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -15,10 +16,11 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   try {
     const { meta } = getPostBySlug(slug);
-    return {
-      title: `${meta.title} | 0xhckr`,
+    return generatePageMetadata({
+      title: meta.title,
       description: meta.description,
-    };
+      path: `/blog/${meta.slug}`,
+    });
   } catch {
     return { title: "Not Found | 0xhckr" };
   }

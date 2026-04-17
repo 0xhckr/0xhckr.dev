@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { PageHeading } from "~/components/page-heading";
 import { TypewriterPosts } from "~/components/typewriter-posts";
 import { getPostMetaList } from "~/lib/blog";
+import { generatePageMetadata } from "~/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "Blog",
+  description: "Thoughts on software, NixOS, homelabbing, and other things.",
+  path: "/blog",
+});
 
 export default function Blog() {
   const posts = getPostMetaList();

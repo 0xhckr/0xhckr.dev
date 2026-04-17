@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import fs from "node:fs";
+import path from "node:path";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -7,11 +9,9 @@ export async function GET(request: NextRequest) {
   const description =
     searchParams.get("description") ?? "Mohammad Al-Ahdal | Software Developer";
 
-  const [departureMonoData] = await Promise.all([
-    fetch(
-      "https://raw.githubusercontent.com/xeji01/departuremono/main/DepartureMono/DepartureMonoNerdFontMono-Regular.otf",
-    ).then((r) => r.arrayBuffer()),
-  ]);
+  const fontData = fs.readFileSync(
+    path.join(process.cwd(), "src/fonts/DepartureMono-Regular.otf"),
+  );
 
   return new ImageResponse(
     <div
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       fonts: [
         {
           name: "Departure Mono",
-          data: departureMonoData,
+          data: fontData,
           weight: 400,
           style: "normal",
         },

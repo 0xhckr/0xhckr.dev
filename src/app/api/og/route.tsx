@@ -7,8 +7,9 @@ export async function GET(request: NextRequest) {
   const description =
     searchParams.get("description") ?? "Mohammad Al-Ahdal | Software Developer";
 
-  const origin = request.nextUrl.origin;
-  const fontRes = await fetch(`${origin}/fonts/DepartureMono-Regular.otf`);
+  const fontRes = await fetch(
+    "https://cdn.jsdelivr.net/gh/xeji01/departuremono@main/DepartureMono/DepartureMonoNerdFontMono-Regular.otf",
+  );
   const fontData = await fontRes.arrayBuffer();
 
   return new ImageResponse(

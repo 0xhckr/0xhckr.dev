@@ -477,7 +477,7 @@ export const StoryScroll = () => {
       <StoryContent />
       <main id="main-content" tabIndex={-1}>
         <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
-          <div className="tw-content relative w-full max-w-2xl overflow-hidden">
+          <div className="tw-content relative w-full max-w-2xl overflow-hidden lowercase">
             {story.map((section, sIdx) => (
               <div
                 key={section.id}

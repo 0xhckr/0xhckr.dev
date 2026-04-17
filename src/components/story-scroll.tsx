@@ -205,7 +205,8 @@ const TypewriterLine = ({
           : "span";
 
   const classes = cn("tw-char inline-block", {
-    "text-2xl sm:text-4xl font-bold text-[#003c3c] dark:text-[#5eead4]": markdownType === "h1",
+    "text-2xl sm:text-4xl font-bold text-[#003c3c] dark:text-[#5eead4]":
+      markdownType === "h1",
     "text-xl sm:text-3xl font-semibold": markdownType === "h2",
     "text-lg sm:text-2xl font-medium": markdownType === "h3",
     "underline decoration-foreground/30 hover:decoration-foreground/70 transition-colors text-[#2e6b7b] dark:text-[#7dd3e0]":
@@ -251,9 +252,7 @@ const TypewriterLine = ({
       </a>
     );
   }
-  return (
-    <Component className={cn("inline")}>{chars}</Component>
-  );
+  return <Component className={cn("inline")}>{chars}</Component>;
 };
 
 const StoryContent = () => (
@@ -268,7 +267,15 @@ const StoryContent = () => (
               if (line.href) {
                 return (
                   <p key={i}>
-                    <a href={line.href} target={line.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer">{line.text}</a>
+                    <a
+                      href={line.href}
+                      target={
+                        line.href.startsWith("mailto:") ? undefined : "_blank"
+                      }
+                      rel="noopener noreferrer"
+                    >
+                      {line.text}
+                    </a>
                   </p>
                 );
               }
@@ -469,33 +476,37 @@ export const StoryScroll = () => {
     <div ref={containerRef} className="relative">
       <StoryContent />
       <main id="main-content" tabIndex={-1}>
-      <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
-        <div className="tw-content relative w-full max-w-2xl overflow-hidden">
-          {story.map((section, sIdx) => (
-            <div
-              key={section.id}
-              ref={(el) => {
-                sectionsRef.current[sIdx] = el;
-              }}
-              className="tw-section"
-              style={{ display: sIdx === 0 ? "block" : "none" }}
-            >
-              {section.lines.map((line, i) => (
-                <div key={i} className="tw-block mb-1">
-                  <TypewriterLine
-                    markdownType={line.markdownType}
-                    text={line.text}
-                    href={line.href}
-                    blank={line.text.length === 0}
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
-          <span ref={cursorRef} className={cn("tw-cursor")} aria-hidden="true" />
+        <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
+          <div className="tw-content relative w-full max-w-2xl overflow-hidden">
+            {story.map((section, sIdx) => (
+              <div
+                key={section.id}
+                ref={(el) => {
+                  sectionsRef.current[sIdx] = el;
+                }}
+                className="tw-section"
+                style={{ display: sIdx === 0 ? "block" : "none" }}
+              >
+                {section.lines.map((line, i) => (
+                  <div key={i} className="tw-block mb-1">
+                    <TypewriterLine
+                      markdownType={line.markdownType}
+                      text={line.text}
+                      href={line.href}
+                      blank={line.text.length === 0}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+            <span
+              ref={cursorRef}
+              className={cn("tw-cursor")}
+              aria-hidden="true"
+            />
+          </div>
         </div>
-      </div>
-      <div style={{ height: `${totalScroll}px` }} />
+        <div style={{ height: `${totalScroll}px` }} />
       </main>
       <div
         ref={scrollHintRef}
@@ -507,7 +518,7 @@ export const StoryScroll = () => {
         )}
         aria-hidden="true"
       >
-        <span className="text-xs sm:text-sm text-foreground/50 tracking-wide select-none">
+        <span className="text-xs sm:text-sm text-foreground/50 tracking-wide select-none font-mono">
           {"scroll down".split("").map((char, i) => (
             <span
               key={i}

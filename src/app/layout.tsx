@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 import { PageLoader } from "~/components/page-loader";
 import { Navbar } from "~/components/navbar";
 import "./globals.css";
@@ -9,9 +10,12 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const departureMono = localFont({
+  src: "../fonts/DepartureMono-Regular.otf",
+  variable: "--font-departure-mono",
+  weight: "400",
+  style: "normal",
+  display: "swap",
 });
 
 const siteUrl = "https://0xhckr.dev";
@@ -98,7 +102,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${departureMono.variable} antialiased`}
       >
         <PageLoader>
           <Navbar />

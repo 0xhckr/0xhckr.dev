@@ -9,7 +9,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-departure-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,7 +24,7 @@
 }
 
 .tw-content {
-  font-family: var(--font-geist-mono);
+  font-family: var(--font-departure-mono);
   font-size: 0.8125rem;
   line-height: 1.6;
   overflow-wrap: anywhere;

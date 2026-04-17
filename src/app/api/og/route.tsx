@@ -7,6 +7,12 @@ export async function GET(request: NextRequest) {
   const description =
     searchParams.get("description") ?? "Mohammad Al-Ahdal | Software Developer";
 
+  const [departureMonoData] = await Promise.all([
+    fetch(
+      "https://raw.githubusercontent.com/xeji01/departuremono/main/DepartureMono/DepartureMonoNerdFontMono-Regular.otf",
+    ).then((r) => r.arrayBuffer()),
+  ]);
+
   return new ImageResponse(
     <div
       style={{
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
           style={{
             fontSize: 72,
             fontWeight: 700,
-            fontFamily: "monospace",
+            fontFamily: "Departure Mono",
             color: "#3399cc",
             letterSpacing: "-0.02em",
             textAlign: "left",
@@ -49,6 +55,7 @@ export async function GET(request: NextRequest) {
           style={{
             fontSize: 28,
             fontWeight: 400,
+            fontFamily: "Departure Mono",
             color: "#a3a3a3",
             textAlign: "center",
             margin: 0,
@@ -62,6 +69,14 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
+      fonts: [
+        {
+          name: "Departure Mono",
+          data: departureMonoData,
+          weight: 400,
+          style: "normal",
+        },
+      ],
     },
   );
 }

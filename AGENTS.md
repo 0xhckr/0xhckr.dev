@@ -34,7 +34,7 @@ public/            # Static assets
 ```
 
 - **Path alias**: `~/*` maps to `./src/*` (configured in `tsconfig.json` `paths`). Use this for all internal imports.
-- **Layout**: `RootLayout` wraps all pages with Geist fonts and the `PageLoader` component.
+- **Layout**: `RootLayout` wraps all pages with Geist Sans and Departure Mono fonts and the `PageLoader` component.
 - **PageLoader** (`src/components/page-loader.tsx`): A client component that renders an animated grid overlay (GSAP) on page load, then reveals content.
 
 ## UI Components

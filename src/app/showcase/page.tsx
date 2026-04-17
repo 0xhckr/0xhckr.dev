@@ -1,5 +1,33 @@
 import { PageHeading } from "~/components/page-heading";
+import { TypewriterProjects } from "~/components/typewriter-projects";
+
+const projects = [
+  {
+    title: "stoa.gg",
+    description: "a private communications platform like discord and slack.",
+    link: "https://stoa.gg",
+  },
+  {
+    title: "thenix.guide",
+    description: "a guide to nix and nixos.",
+    link: "https://thenix.guide",
+  },
+  {
+    title: "0xhckr.dev",
+    description: "my personal portfolio site.",
+    link: "https://0xhckr.dev",
+  },
+];
 
 export default function Showcase() {
-  return <PageHeading text="Showcase" />;
+  return (
+    <main id="main-content" tabIndex={-1}>
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 sm:px-8">
+        <div className="tw-content w-full max-w-2xl lowercase">
+          <PageHeading text="Showcase" inline />
+          <TypewriterProjects projects={projects} />
+        </div>
+      </div>
+    </main>
+  );
 }

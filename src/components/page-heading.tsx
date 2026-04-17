@@ -8,7 +8,13 @@ import { onPageReady } from "~/lib/page-ready";
 
 gsap.registerPlugin(useGSAP);
 
-export const PageHeading = ({ text }: { text: string }) => {
+export const PageHeading = ({
+  text,
+  inline = false,
+}: {
+  text: string;
+  inline?: boolean;
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
 
@@ -48,6 +54,30 @@ export const PageHeading = ({ text }: { text: string }) => {
     { scope: containerRef },
   );
 
+  if (inline) {
+    return (
+      <div ref={containerRef} className="relative">
+        <h1>
+          {`# ${text}`.split("").map((char, i) => (
+            <span
+              key={i}
+              className="tw-char inline-block text-2xl sm:text-4xl font-bold text-[#003c3c] dark:text-[#5eead4]"
+              aria-hidden="true"
+            >
+              {char === " " ? "\u00A0" : char}
+            </span>
+          ))}
+          <span className="sr-only">{text}</span>
+        </h1>
+        <span
+          ref={cursorRef}
+          className={cn("tw-cursor")}
+          aria-hidden="true"
+        />
+      </div>
+    );
+  }
+
   return (
     <main id="main-content" tabIndex={-1}>
       <div className="flex h-screen items-center justify-center px-4 sm:px-8">
@@ -55,11 +85,7 @@ export const PageHeading = ({ text }: { text: string }) => {
           ref={containerRef}
           className="tw-content relative w-full max-w-2xl overflow-hidden lowercase"
         >
-          <h1
-            className={cn(
-              "tw-char inline-block text-2xl sm:text-4xl font-bold text-[#003c3c] dark:text-[#5eead4]",
-            )}
-          >
+          <h1>
             {`# ${text}`.split("").map((char, i) => (
               <span
                 key={i}

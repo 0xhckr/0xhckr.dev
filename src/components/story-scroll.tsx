@@ -285,6 +285,7 @@ export const StoryScroll = () => {
   const cursorRef = useRef<HTMLSpanElement>(null);
   const scrollReadyRef = useRef(false);
   const [showScrollHint, setShowScrollHint] = useState(false);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let dismissed = false;
@@ -294,8 +295,12 @@ export const StoryScroll = () => {
         if (!dismissed && window.scrollY === 0) setShowScrollHint(true);
       }, 750);
       const onScroll = () => {
-        dismissed = true;
-        setShowScrollHint(false);
+        if (window.scrollY > 40) {
+          dismissed = true;
+          const el = scrollHintRef.current;
+          if (el) el.classList.remove("animate-pulse");
+          setShowScrollHint(false);
+        }
       };
       window.addEventListener("scroll", onScroll, { passive: true });
     };
@@ -305,6 +310,29 @@ export const StoryScroll = () => {
       setShowScrollHint(false);
     };
   }, []);
+
+  useGSAP(
+    () => {
+      const el = scrollHintRef.current;
+      if (!el || !showScrollHint) return;
+      el.classList.remove("animate-pulse");
+      const chars = gsap.utils.toArray<HTMLElement>(".scroll-hint-char", el);
+      if (chars.length === 0) return;
+      gsap.set(chars, { opacity: 0 });
+      const tl = gsap.timeline();
+      for (let i = 0; i < chars.length; i++) {
+        tl.to(chars[i], { opacity: 1, duration: 0.05 }, i * 0.06);
+      }
+      tl.add(() => {
+        gsap.set(chars, { clearProps: "opacity" });
+        el.classList.add("animate-pulse");
+      });
+      return () => {
+        tl.kill();
+      };
+    },
+    { scope: scrollHintRef, dependencies: [showScrollHint] },
+  );
 
   useGSAP(
     () => {
@@ -470,6 +498,7 @@ export const StoryScroll = () => {
       <div style={{ height: `${totalScroll}px` }} />
       </main>
       <div
+        ref={scrollHintRef}
         className={cn(
           "fixed bottom-8 left-1/2 -translate-x-1/2 z-30 transition-all duration-500",
           showScrollHint
@@ -478,8 +507,16 @@ export const StoryScroll = () => {
         )}
         aria-hidden="true"
       >
-        <span className="animate-pulse text-xs sm:text-sm text-foreground/50 tracking-wide select-none">
-          scroll down
+        <span className="text-xs sm:text-sm text-foreground/50 tracking-wide select-none">
+          {"scroll down".split("").map((char, i) => (
+            <span
+              key={i}
+              className="scroll-hint-char inline-block"
+              aria-hidden="true"
+            >
+              {char === " " ? "\u00A0" : char}
+            </span>
+          ))}
         </span>
       </div>
     </div>

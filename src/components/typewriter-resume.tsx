@@ -21,20 +21,23 @@ function TypewriterText({
 }) {
   return (
     <>
-      {text.split(" ").flatMap((word, wIdx) => [
-        <span key={`w-${wIdx}`} className="whitespace-nowrap">
-          {word.split("").map((char, cIdx) => (
-            <span
-              key={`${wIdx}-${cIdx}`}
-              className={`tw-char inline-block ${className ?? ""}`}
-              aria-hidden="true"
-            >
-              {char}
-            </span>
-          ))}
-        </span>,
-        wIdx < text.split(" ").length - 1 ? " " : null,
-      ]).filter(Boolean)}
+      {text
+        .split(" ")
+        .flatMap((word, wIdx) => [
+          <span key={`w-${wIdx}`} className="whitespace-nowrap">
+            {word.split("").map((char, cIdx) => (
+              <span
+                key={`${wIdx}-${cIdx}`}
+                className={`tw-char inline-block ${className ?? ""}`}
+                aria-hidden="true"
+              >
+                {char}
+              </span>
+            ))}
+          </span>,
+          wIdx < text.split(" ").length - 1 ? " " : null,
+        ])
+        .filter(Boolean)}
       <span className="sr-only">{text}</span>
     </>
   );
@@ -51,13 +54,7 @@ function Heading({ text }: { text: string }) {
   );
 }
 
-function SkillBadge({
-  name,
-  isExpert,
-}: {
-  name: string;
-  isExpert: string;
-}) {
+function SkillBadge({ name, isExpert }: { name: string; isExpert: string }) {
   return (
     <span
       className={`tw-skill inline-block rounded px-2 py-0.5 text-xs sm:text-sm mr-1.5 mb-1.5 ${
@@ -114,11 +111,7 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
           const chars = allChars[sIdx];
           const tl = gsap.timeline({ delay: sIdx * staggerDelay });
           for (let i = 0; i < chars.length; i++) {
-            tl.to(
-              chars[i],
-              { opacity: 1, duration: charDelay },
-              i * charDelay,
-            );
+            tl.to(chars[i], { opacity: 1, duration: charDelay }, i * charDelay);
           }
           tl.to(
             gsap.utils.toArray<HTMLElement>(".tw-skill", el),
@@ -163,7 +156,7 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
                     className="font-semibold text-[#2e6b7b] dark:text-[#7dd3e0]"
                   />
                 </div>
-                <div>
+                <div className="whitespace-nowrap shrink-0">
                   <TypewriterText
                     text={`${exp.years.start} — ${exp.years.end}`}
                     className="text-xs sm:text-sm text-foreground/50"
@@ -204,31 +197,31 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
 
       {data.education && (
         <div className="tw-resume-section">
-        <Heading text="## education" />
-        <div>
-          <TypewriterText
-            text={data.education.degreeName}
-            className="font-semibold text-[#2e6b7b] dark:text-[#7dd3e0]"
-          />
-          <div className="mt-0.5">
-            <TypewriterText text={data.education.universityName} />
-          </div>
-          <div className="mt-0.5">
+          <Heading text="## education" />
+          <div>
             <TypewriterText
-              text={data.education.progression}
-              className="text-xs sm:text-sm text-foreground/50"
+              text={data.education.degreeName}
+              className="font-semibold text-[#2e6b7b] dark:text-[#7dd3e0]"
             />
-          </div>
-          {data.education.gpa && (
+            <div className="mt-0.5">
+              <TypewriterText text={data.education.universityName} />
+            </div>
             <div className="mt-0.5">
               <TypewriterText
-                text={`gpa: ${data.education.gpa}`}
+                text={data.education.progression}
                 className="text-xs sm:text-sm text-foreground/50"
               />
             </div>
-          )}
+            {data.education.gpa && (
+              <div className="mt-0.5">
+                <TypewriterText
+                  text={`gpa: ${data.education.gpa}`}
+                  className="text-xs sm:text-sm text-foreground/50"
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
       )}
     </div>
   );

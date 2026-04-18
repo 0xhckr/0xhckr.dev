@@ -15,6 +15,10 @@
 
 .tw-char {
   opacity: 0;
+  text-shadow:
+    0 0 2px currentColor,
+    0 0 5px currentColor,
+    0 0 10px currentColor;
 }
 
 .tw-content {
@@ -33,7 +37,6 @@
 }
 
 .tw-block {
-  overflow: hidden;
 }
 
 .tw-cursor {

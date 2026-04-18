@@ -114,8 +114,24 @@ interface SectionMeta {
 }
 
 const lineFullText = (l: Line) => {
-  const prefix = l.markdownType === "h1" ? "# " : l.markdownType === "h2" ? "## " : l.markdownType === "h3" ? "### " : l.markdownType === "comment" ? "<!-- " : l.markdownType === "link" ? "[" : "";
-  const suffix = l.markdownType === "link" ? `](${l.href})` : l.markdownType === "comment" ? " -->" : "";
+  const prefix =
+    l.markdownType === "h1"
+      ? "# "
+      : l.markdownType === "h2"
+        ? "## "
+        : l.markdownType === "h3"
+          ? "### "
+          : l.markdownType === "comment"
+            ? "<!-- "
+            : l.markdownType === "link"
+              ? "["
+              : "";
+  const suffix =
+    l.markdownType === "link"
+      ? `](${l.href})`
+      : l.markdownType === "comment"
+        ? " -->"
+        : "";
   return `${prefix}${l.text}${suffix}`;
 };
 
@@ -230,16 +246,18 @@ const TypewriterLine = ({
         : "";
   const full = `${prefix}${text}${suffix}`;
   const words = full.split(" ");
-  const chars = words.flatMap((word, wIdx) => [
-    <span key={`w-${wIdx}`} className="whitespace-nowrap">
-      {word.split("").map((char, cIdx) => (
-        <span key={`${wIdx}-${cIdx}`} className={classes} aria-hidden="true">
-          {char}
-        </span>
-      ))}
-    </span>,
-    wIdx < words.length - 1 ? " " : null,
-  ]).filter(Boolean);
+  const chars = words
+    .flatMap((word, wIdx) => [
+      <span key={`w-${wIdx}`} className="whitespace-nowrap">
+        {word.split("").map((char, cIdx) => (
+          <span key={`${wIdx}-${cIdx}`} className={classes} aria-hidden="true">
+            {char}
+          </span>
+        ))}
+      </span>,
+      wIdx < words.length - 1 ? " " : null,
+    ])
+    .filter(Boolean);
   if (href) {
     const isExternal = !href.startsWith("mailto:");
     return (
@@ -474,7 +492,7 @@ export const StoryScroll = () => {
       <StoryContent />
       <main id="main-content" tabIndex={-1}>
         <div className="sticky top-0 z-10 flex h-screen items-center justify-center px-4 sm:px-8">
-          <div className="tw-content relative w-full max-w-2xl overflow-hidden lowercase">
+          <div className="tw-content relative w-full max-w-2xl lowercase">
             {story.map((section, sIdx) => (
               <div
                 key={section.id}

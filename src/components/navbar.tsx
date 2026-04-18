@@ -120,10 +120,12 @@ export function Navbar() {
   );
 
   return (
-    <nav className="fixed bottom-4 right-4 z-30" aria-label="Main navigation">
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-end" aria-label="Main navigation">
+      <div className="fixed inset-x-0 bottom-0 h-40 -z-[11] pointer-events-none bg-gradient-to-t from-black/80 to-transparent" />
+      <div className="fixed inset-x-0 bottom-0 h-40 -z-10 pointer-events-none backdrop-blur-xl [mask-image:linear-gradient(to_top,black,transparent)]" />
       <div
         ref={desktopRef}
-        className="hidden sm:block font-mono text-sm text-foreground/50 select-none"
+        className="hidden sm:block font-mono text-sm text-foreground/50 select-none mr-4 mb-4"
       >
         <span
           className="inline-flex items-center justify-end gap-4"
@@ -148,7 +150,7 @@ export function Navbar() {
         </span>
       </div>
 
-      <div className="sm:hidden flex flex-col items-end gap-2">
+      <div className="sm:hidden flex flex-col items-end gap-2 mr-4 mb-4">
         <button
           ref={mobileToggleRef}
           type="button"

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { PageHeading } from "~/components/page-heading";
+import { TypewriterResume } from "~/components/typewriter-resume";
 import { generatePageMetadata } from "~/lib/metadata";
+import { resumeData } from "~/lib/resume";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Resume",
@@ -10,5 +12,14 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 export default function Resume() {
-  return <PageHeading text="Resume" />;
+  return (
+    <main id="main-content" tabIndex={-1}>
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-16 sm:px-8">
+        <div className="tw-content w-full max-w-2xl lowercase">
+          <PageHeading text="Resume" inline />
+          <TypewriterResume data={resumeData} />
+        </div>
+      </div>
+    </main>
+  );
 }

@@ -114,11 +114,12 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
           const chars = allChars[sIdx];
           const tl = gsap.timeline({ delay: sIdx * staggerDelay });
 
-          const liFirstChar = new Map<HTMLElement, number>();
+          const liFirstChar = new Map<Element, number>();
           for (let i = 0; i < chars.length; i++) {
             tl.to(chars[i], { opacity: 1, duration: charDelay }, i * charDelay);
             const parentLi = chars[i].closest(".tw-li");
-            if (parentLi && !liFirstChar.has(parentLi)) liFirstChar.set(parentLi, i);
+            if (parentLi && !liFirstChar.has(parentLi))
+              liFirstChar.set(parentLi, i);
           }
 
           liFirstChar.forEach((charIdx, li) => {

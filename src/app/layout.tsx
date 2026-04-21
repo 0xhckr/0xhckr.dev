@@ -1,6 +1,8 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import { Providers } from "~/components/providers";
 import { PageLoader } from "~/components/page-loader";
 import { Navbar } from "~/components/navbar";
 import "./globals.css";
@@ -104,10 +106,14 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${departureMono.variable} antialiased`}
       >
-        <PageLoader>
-          <Navbar />
-          <main>{children}</main>
-        </PageLoader>
+        <ClerkProvider>
+          <Providers>
+            <PageLoader>
+              <Navbar />
+              <main>{children}</main>
+            </PageLoader>
+          </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

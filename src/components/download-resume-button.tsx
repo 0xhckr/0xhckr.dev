@@ -4,13 +4,13 @@ import { useCallback } from "react";
 import { FileDown } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { generateResumePDF } from "~/lib/generate-resume-pdf";
-import { resumeData } from "~/lib/resume";
+import type { ResumeData } from "~/lib/resume";
 
-export const DownloadResumeButton = () => {
+export const DownloadResumeButton = ({ data }: { data: ResumeData }) => {
   const handleClick = useCallback(async () => {
-    const doc = await generateResumePDF(resumeData);
+    const doc = await generateResumePDF(data);
     doc.save("resume-mohammad-alahdal.pdf");
-  }, []);
+  }, [data]);
 
   return (
     <Button

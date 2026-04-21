@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Link from "next/link";
@@ -18,6 +19,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { isSignedIn } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const desktopRef = useRef<HTMLDivElement>(null);
   const mobileToggleRef = useRef<HTMLButtonElement>(null);
@@ -120,7 +122,10 @@ export function Navbar() {
   );
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-end" aria-label="Main navigation">
+    <nav
+      className="fixed inset-x-0 bottom-0 z-30 flex justify-end"
+      aria-label="Main navigation"
+    >
       <div className="fixed inset-x-0 bottom-0 h-40 -z-[11] pointer-events-none bg-gradient-to-t from-black/80 to-transparent" />
       <div className="fixed inset-x-0 bottom-0 h-40 -z-10 pointer-events-none backdrop-blur-xl [mask-image:linear-gradient(to_top,black,transparent)]" />
       <div
@@ -147,6 +152,36 @@ export function Navbar() {
               ))}
             </Link>
           ))}
+          {isSignedIn && (
+            <SignOutButton redirectUrl="/">
+              <span
+                className={cn(
+                  "inline-flex cursor-pointer hover:text-foreground/80 transition-colors",
+                )}
+              >
+                {"sign-out".split("").map((char, i) => (
+                  <span key={i} className="nav-char inline-block">
+                    {char}
+                  </span>
+                ))}
+              </span>
+            </SignOutButton>
+          )}
+          {!isSignedIn && (
+            <SignInButton mode="modal">
+              <span
+                className={cn(
+                  "inline-flex cursor-pointer hover:text-foreground/80 transition-colors",
+                )}
+              >
+                {"login".split("").map((char, i) => (
+                  <span key={i} className="nav-char inline-block">
+                    {char}
+                  </span>
+                ))}
+              </span>
+            </SignInButton>
+          )}
         </span>
       </div>
 

@@ -23,6 +23,17 @@
   user-select: none;
 }
 
+.tw-resume-section :not(h2) .tw-char {
+  text-shadow: none;
+}
+
+.tw-resume-section h2 .tw-char {
+  text-shadow:
+    0 0 2px currentColor,
+    0 0 5px currentColor,
+    0 0 10px currentColor;
+}
+
 .tw-content {
   font-family: var(--font-departure-mono);
   font-size: 0.8125rem;

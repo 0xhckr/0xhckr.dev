@@ -87,6 +87,9 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
         gsap.set(chars, { opacity: 0 });
       }
 
+      const liEls = gsap.utils.toArray<HTMLElement>(".tw-li", container);
+      gsap.set(liEls, { opacity: 0 });
+
       const skillBadges = gsap.utils.toArray<HTMLElement>(
         ".tw-skill",
         container,
@@ -110,9 +113,18 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
         sectionEls.forEach((el, sIdx) => {
           const chars = allChars[sIdx];
           const tl = gsap.timeline({ delay: sIdx * staggerDelay });
+
+          const liFirstChar = new Map<HTMLElement, number>();
           for (let i = 0; i < chars.length; i++) {
             tl.to(chars[i], { opacity: 1, duration: charDelay }, i * charDelay);
+            const parentLi = chars[i].closest(".tw-li");
+            if (parentLi && !liFirstChar.has(parentLi)) liFirstChar.set(parentLi, i);
           }
+
+          liFirstChar.forEach((charIdx, li) => {
+            tl.set(li, { opacity: 1 }, charIdx * charDelay);
+          });
+
           tl.to(
             gsap.utils.toArray<HTMLElement>(".tw-skill", el),
             {
@@ -175,7 +187,7 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
                 ) : (
                   <ul className="list-disc pl-5 space-y-1">
                     {exp.description.map((item, i) => (
-                      <li key={i}>
+                      <li key={i} className="tw-li">
                         <TypewriterText text={item} />
                       </li>
                     ))}

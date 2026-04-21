@@ -6,8 +6,10 @@ const TEXT = "#1a1a1a";
 const MUTED = "#6b7280";
 const LIGHT = "#f3f4f6";
 const PAGE_WIDTH = 210;
-const MARGIN = 18;
+const MARGIN = 14;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
+const SIDEBAR_WIDTH = 58;
+const MAIN_WIDTH = CONTENT_WIDTH - SIDEBAR_WIDTH - 8;
 
 function splitLines(doc: jsPDF, text: string, maxWidth: number): string[] {
   const lines: string[] = [];
@@ -65,85 +67,116 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
     doc.setFont("DMSans", weight);
   };
 
-  let y = MARGIN;
+  let mainY = MARGIN;
+  let sideY = MARGIN;
 
-  const checkPage = (needed: number) => {
-    if (y + needed > 297 - MARGIN) {
+  const LEFT_X = MARGIN;
+  const SIDE_X = MARGIN + MAIN_WIDTH + 8;
+
+
+  const checkPageMain = (needed: number) => {
+    if (mainY + needed > 297 - MARGIN) {
       doc.addPage();
-      y = MARGIN;
+      mainY = MARGIN;
+      sideY = MARGIN;
     }
   };
 
-  const addSectionHeading = (text: string) => {
-    checkPage(14);
-    y += 5;
+  const checkPageSide = (needed: number) => {
+    if (sideY + needed > 297 - MARGIN) {
+      doc.addPage();
+      mainY = MARGIN;
+      sideY = MARGIN;
+    }
+  };
+
+  const addSectionHeading = (text: string, x: number) => {
     font("bold");
-    doc.setFontSize(14);
+    doc.setFontSize(11);
     doc.setTextColor(...hexToRgb(ACCENT));
     const upper = text.toUpperCase();
-    const spacing = 1.2;
-    let x = MARGIN;
+    const spacing = 0.8;
+    let cx = x;
     for (const char of upper) {
-      doc.text(char, x, y);
-      x += doc.getTextWidth(char) + spacing;
+      doc.text(char, cx, mainY);
+      cx += doc.getTextWidth(char) + spacing;
     }
-    y += 8;
   };
 
   const addExperience = (exp: ResumeData["experiences"][number]) => {
-    checkPage(22);
-
-    font("bold");
-    doc.setFontSize(10);
-    doc.setTextColor(...hexToRgb(TEXT));
-    const titleW = doc.getTextWidth(exp.title);
-    doc.text(exp.title, MARGIN, y);
-    font("normal");
-    doc.setFontSize(10);
-    doc.setTextColor(...hexToRgb(TEXT));
-    const atW = doc.getTextWidth(" @ ");
-    doc.text(` @ `, MARGIN + titleW, y);
-    doc.text(`${exp.company} | ${exp.address}`, MARGIN + titleW + atW, y);
+    checkPageMain(22);
 
     const years =
       exp.years.start === exp.years.end
         ? `${exp.years.start}`
         : `${exp.years.start} - ${exp.years.end}`;
     font("bold");
-    doc.setFontSize(8.5);
+    doc.setFontSize(8);
     doc.setTextColor(...hexToRgb(MUTED));
-    doc.text(years, MARGIN + CONTENT_WIDTH, y, { align: "right" });
+    doc.text(years, LEFT_X, mainY);
 
-    y += 5;
+    mainY += 3.5;
+
+    font("bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...hexToRgb(TEXT));
+    const titleW = doc.getTextWidth(exp.title);
+    doc.text(exp.title, LEFT_X, mainY);
     font("normal");
-    doc.setFontSize(9);
+    doc.setFontSize(9.5);
+    doc.setTextColor(...hexToRgb(TEXT));
+    const atW = doc.getTextWidth(" @ ");
+    doc.text(` @ `, LEFT_X + titleW, mainY);
+    doc.text(
+      `${exp.company}${exp.address ? ` | ${exp.address}` : ""}`,
+      LEFT_X + titleW + atW,
+      mainY,
+    );
+
+    mainY += 4.5;
+    font("normal");
+    doc.setFontSize(8.5);
     doc.setTextColor(...hexToRgb(TEXT));
 
     if (Array.isArray(exp.description)) {
       const bulletWidth = doc.getTextWidth("• ");
-      const textWidth = CONTENT_WIDTH - 2 - bulletWidth;
-      const textX = MARGIN + 2 + bulletWidth;
+      const textWidth = MAIN_WIDTH - 2 - bulletWidth;
+      const textX = LEFT_X + 2 + bulletWidth;
 
       for (const item of exp.description) {
         const lines = splitLines(doc, item, textWidth);
         for (let i = 0; i < lines.length; i++) {
-          checkPage(5);
+          checkPageMain(5);
           if (i === 0) {
-            doc.text("• ", MARGIN + 2, y);
+            doc.text("• ", LEFT_X + 2, mainY);
           }
-          doc.text(lines[i], textX, y);
-          y += 4.2;
+          doc.text(lines[i], textX, mainY);
+          mainY += 3.8;
         }
       }
     } else {
-      const lines = splitLines(doc, exp.description, CONTENT_WIDTH - 2);
+      const lines = splitLines(doc, exp.description, MAIN_WIDTH - 2);
       for (const line of lines) {
-        checkPage(5);
-        doc.text(line, MARGIN + 2, y);
-        y += 4.2;
+        checkPageMain(5);
+        doc.text(line, LEFT_X + 2, mainY);
+        mainY += 3.8;
       }
     }
-    y += 2;
+    mainY += 5;
+  };
+
+  const addSideHeading = (text: string) => {
+    font("bold");
+    doc.setFontSize(11);
+    doc.setTextColor(...hexToRgb(ACCENT));
+    const upper = text.toUpperCase();
+    const spacing = 0.8;
+    let cx = SIDE_X;
+    for (const char of upper) {
+      doc.text(char, cx, sideY);
+      cx += doc.getTextWidth(char) + spacing;
+    }
+    sideY += 8;
   };
 
   const addSkills = (skills: ResumeData["skills"]) => {
@@ -157,22 +190,29 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
     }, {});
 
     for (const [category, categorySkills] of Object.entries(grouped)) {
-      checkPage(10);
+      checkPageSide(10);
 
-      font("normal");
+      font("bold");
       doc.setFontSize(9);
-      doc.setTextColor(...hexToRgb(MUTED));
-      doc.text(category, MARGIN, y);
-      y += 6;
-      let x = MARGIN;
+      doc.setTextColor(...hexToRgb(ACCENT));
+      doc.text(category.toUpperCase(), SIDE_X, sideY);
+      sideY += 5.5;
+      let x = SIDE_X;
 
       for (const skill of categorySkills) {
         const label = skill.name;
-        const w = doc.getTextWidth(label) + 6;
+        if (skill.isExpert === "yes") {
+          font("bold");
+        } else {
+          font("normal");
+        }
+        doc.setFontSize(7.5);
+        const w = doc.getTextWidth(label) + 5;
 
-        if (x + w > MARGIN + CONTENT_WIDTH) {
-          x = MARGIN;
-          y += 7.5;
+        if (x + w > SIDE_X + SIDEBAR_WIDTH) {
+          x = SIDE_X;
+          sideY += 7;
+          checkPageSide(7);
         }
 
         doc.setFillColor(...hexToRgb(LIGHT));
@@ -182,27 +222,27 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
         } else {
           font("normal");
         }
-        doc.setFontSize(8.5);
-        doc.roundedRect(x, y - 3.2, w, 4.8, 1, 1, "F");
-        doc.text(label, x + 3, y);
-        x += w + 2;
+        doc.setFontSize(7.5);
+        doc.roundedRect(x, sideY - 3, w, 4.5, 1, 1, "F");
+        doc.text(label, x + 2.5, sideY);
+        x += w + 1.5;
       }
-      y += 10;
+      sideY += 8;
     }
   };
 
-  // Header
+  // Header — full width
   font("bold");
-  doc.setFontSize(26);
+  doc.setFontSize(24);
   doc.setTextColor(...hexToRgb(ACCENT));
-  doc.text("Mohammad Al-Ahdal", MARGIN, y);
-  y += 7;
+  doc.text("Mohammad Al-Ahdal", MARGIN, mainY);
+  mainY += 6;
 
   font("normal");
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(...hexToRgb(MUTED));
-  doc.text("Software Developer", MARGIN, y);
-  y += 5;
+  doc.text("Software Developer", MARGIN, mainY);
+  mainY += 5;
 
   const links = [
     { label: "github.com/0xhckr", url: "https://github.com/0xhckr" },
@@ -215,70 +255,87 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
   ];
 
   font("bold");
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(...hexToRgb(ACCENT));
   let linkX = MARGIN;
   for (let i = 0; i < links.length; i++) {
     const link = links[i];
     const w = doc.getTextWidth(link.label);
-    doc.textWithLink(link.label, linkX, y, { url: link.url });
+    doc.textWithLink(link.label, linkX, mainY, { url: link.url });
     linkX += w;
     if (i < links.length - 1) {
       const sep = "  ·  ";
       doc.setTextColor(...hexToRgb(MUTED));
-      doc.text(sep, linkX, y);
+      doc.text(sep, linkX, mainY);
       doc.setTextColor(...hexToRgb(ACCENT));
       linkX += doc.getTextWidth(sep);
     }
   }
-  y += 10;
+  mainY += 3;
+
+  doc.setDrawColor(...hexToRgb(LIGHT));
+  doc.setLineWidth(0.3);
+  doc.line(0, mainY, PAGE_WIDTH, mainY);
+  mainY += 3;
+
+  sideY = mainY;
+
+  // Sidebar: Skills
+  sideY += 4;
+  addSideHeading("Skills & Tools");
+  addSkills(data.skills);
+
+  // Main column: divider line then content
+  doc.setDrawColor(...hexToRgb(LIGHT));
+  doc.setLineWidth(0.3);
+  doc.line(SIDE_X - 4, mainY - 3, SIDE_X - 4, 297);
 
   // Profile
-  addSectionHeading("Profile");
+  mainY += 4;
+  addSectionHeading("Profile", LEFT_X);
+  mainY += 6;
   font("normal");
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(...hexToRgb(TEXT));
-  const profileLines = splitLines(doc, data.profile, CONTENT_WIDTH - 2);
+  const profileLines = splitLines(doc, data.profile, MAIN_WIDTH - 2);
   for (const line of profileLines) {
-    checkPage(5);
-    doc.text(line, MARGIN + 2, y);
-    y += 4.2;
+    checkPageMain(5);
+    doc.text(line, LEFT_X + 2, mainY);
+    mainY += 3.8;
   }
 
   // Experience
-  addSectionHeading("Work Experience");
+  mainY += 4;
+  addSectionHeading("Work Experience", LEFT_X);
+  mainY += 6;
   for (const exp of data.experiences) {
     addExperience(exp);
   }
 
-  // Skills
-  doc.addPage();
-  y = MARGIN;
-  addSectionHeading("Skills");
-  addSkills(data.skills);
-
   // Education
   if (data.education) {
-    addSectionHeading("Education");
-    checkPage(14);
+    mainY += 2;
+    checkPageMain(14);
+    addSectionHeading("Education", LEFT_X);
+    mainY += 6;
 
     font("bold");
-    doc.setFontSize(10);
+    doc.setFontSize(9.5);
     doc.setTextColor(...hexToRgb(TEXT));
-    doc.text(data.education.degreeName, MARGIN, y);
-    y += 5;
+    doc.text(data.education.degreeName, LEFT_X, mainY);
+    mainY += 4.5;
 
     font("normal");
-    doc.setFontSize(9);
-    doc.text(data.education.universityName, MARGIN, y);
-    y += 4;
+    doc.setFontSize(8.5);
+    doc.text(data.education.universityName, LEFT_X, mainY);
+    mainY += 3.5;
 
     doc.setTextColor(...hexToRgb(MUTED));
-    doc.text(data.education.progression, MARGIN, y);
+    doc.text(data.education.progression, LEFT_X, mainY);
 
     if (data.education.gpa) {
-      y += 4;
-      doc.text(`GPA: ${data.education.gpa}`, MARGIN, y);
+      mainY += 3.5;
+      doc.text(`GPA: ${data.education.gpa}`, LEFT_X, mainY);
     }
   }
 

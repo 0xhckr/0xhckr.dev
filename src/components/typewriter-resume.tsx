@@ -152,7 +152,7 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
       {/* Experience */}
       <div className="tw-resume-section">
         <Heading text="## experience" />
-        <div className="space-y-5">
+        <div className="space-y-8">
           {data.experiences.map((exp, idx) => (
             <div key={idx}>
               <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
@@ -169,11 +169,11 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
                   />
                 </div>
               </div>
-              <div className="mt-1">
+              <div className="mt-1 font-(family-name:--font-dm-sans)!">
                 {typeof exp.description === "string" ? (
                   <TypewriterText text={exp.description} />
                 ) : (
-                  <ul className="list-disc list-inside space-y-1">
+                  <ul className="list-disc pl-5 space-y-1">
                     {exp.description.map((item, i) => (
                       <li key={i}>
                         <TypewriterText text={item} />

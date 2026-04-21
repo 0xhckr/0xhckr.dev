@@ -112,6 +112,6 @@ export const resumeData: ResumeData = {
     { category: "Tools", name: "Azure", isExpert: "yes" },
     { category: "Tools", name: "GitHub Runners", isExpert: "yes" },
     { category: "Tools", name: "Self Hosting", isExpert: "yes" },
-  ],
+  ].toSorted((a, b) => b.isExpert.localeCompare(a.isExpert)),
   education: null,
 };

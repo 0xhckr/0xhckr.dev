@@ -181,7 +181,7 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
 
   const addSkills = (skills: ResumeData["skills"]) => {
     const grouped = skills.reduce<
-      Record<string, { name: string; isExpert: string }[]>
+      Record<string, { name: string; isExpert: boolean }[]>
     >((acc, skill) => {
       const key = skill.category;
       if (!acc[key]) acc[key] = [];
@@ -201,7 +201,7 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
 
       for (const skill of categorySkills) {
         const label = skill.name;
-        if (skill.isExpert === "yes") {
+        if (skill.isExpert) {
           font("bold");
         } else {
           font("normal");
@@ -217,7 +217,7 @@ export async function generateResumePDF(data: ResumeData): Promise<jsPDF> {
 
         doc.setFillColor(...hexToRgb(LIGHT));
         doc.setTextColor(...hexToRgb(MUTED));
-        if (skill.isExpert === "yes") {
+        if (skill.isExpert) {
           font("bold");
         } else {
           font("normal");

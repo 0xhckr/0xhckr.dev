@@ -54,11 +54,11 @@ function Heading({ text }: { text: string }) {
   );
 }
 
-function SkillBadge({ name, isExpert }: { name: string; isExpert: string }) {
+function SkillBadge({ name, isExpert }: { name: string; isExpert: boolean }) {
   return (
     <span
       className={`tw-skill inline-block rounded px-2 py-0.5 text-xs sm:text-sm mr-1.5 mb-1.5 ${
-        isExpert === "yes"
+        isExpert
           ? "bg-[#003c3c]/10 dark:bg-[#5eead4]/10 text-[#003c3c] dark:text-[#5eead4] font-semibold"
           : "bg-foreground/5 text-foreground/70"
       }`}
@@ -133,7 +133,7 @@ export const TypewriterResume = ({ data }: TypewriterResumeProps) => {
   );
 
   const skillsByCategory = data.skills.reduce<
-    Record<string, { name: string; isExpert: string }[]>
+    Record<string, { name: string; isExpert: boolean }[]>
   >((acc, skill) => {
     const key = skill.category;
     if (!acc[key]) acc[key] = [];

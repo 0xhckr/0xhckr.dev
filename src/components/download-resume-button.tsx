@@ -17,9 +17,10 @@ export const DownloadResumeButton = ({ data }: { data: ResumeData }) => {
       onClick={handleClick}
       aria-label="Download resume as PDF"
       variant="ghost"
-      size="icon-xl"
+      size="icon-lg"
+      className="size-10"
     >
-      <FileDown />
+      <FileDown className="size-6" />
     </Button>
   );
 };

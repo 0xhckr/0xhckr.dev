@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 
 const OPENROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY;
@@ -25,6 +26,11 @@ async function convexQuery(
 }
 
 export async function POST(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return Response.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
   const body = await request.json();
   const { jobPostingId } = body as { jobPostingId?: string };
 

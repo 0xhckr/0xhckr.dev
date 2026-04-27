@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -111,6 +112,11 @@ const RESUME_JSON_SCHEMA = {
 };
 
 export async function POST(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return Response.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
   const body = await request.json();
   const { jobPostingId } = body as { jobPostingId?: string };
 

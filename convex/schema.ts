@@ -7,7 +7,7 @@ export default defineSchema({
     createdAt: v.number(),
     isFrontFacing: v.boolean(),
     jobPosting: v.optional(v.id("jobPostings")),
-  }),
+  }).index("by_isFrontFacing", ["isFrontFacing"]),
   jobPostings: defineTable({
     title: v.string(),
     description: v.string(),

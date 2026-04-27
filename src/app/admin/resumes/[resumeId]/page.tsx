@@ -1,13 +1,19 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
+import {
+  ArrowLeft,
+  Eye,
+  Plus,
+  Save,
+  Sparkles,
+  Star,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, Eye, Plus, Save, Star, Trash2, X } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Switch } from "~/components/ui/switch";
-import { Textarea } from "~/components/ui/textarea";
 import {
   Dialog,
   DialogClose,
@@ -19,10 +25,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
+import { Switch } from "~/components/ui/switch";
+import { Textarea } from "~/components/ui/textarea";
+import type { ResumeData } from "~/lib/resume";
 import { cn } from "~/lib/utils";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id } from "../../../../../convex/_generated/dataModel";
-import type { ResumeData } from "~/lib/resume";
 
 const blankResume: ResumeData = {
   profile: "",
@@ -93,23 +102,17 @@ function ExperienceEditor({
       : experience.description,
   );
 
-  const update = (
-    field: Partial<ResumeData["experiences"][number]>,
-  ) => {
+  const update = (field: Partial<ResumeData["experiences"][number]>) => {
     const start = field.years?.start ?? (Number(startYear) || 0);
     const end =
-      endYear === "Present"
-        ? ("Present" as const)
-        : (Number(endYear) || 0);
+      endYear === "Present" ? ("Present" as const) : Number(endYear) || 0;
     onChange(index, {
       ...experience,
       years: { start, end },
       address: address || undefined,
       title,
       company,
-      description: description
-        .split("\n")
-        .filter((line) => line.trim() !== ""),
+      description: description.split("\n").filter((line) => line.trim() !== ""),
       ...field,
     });
   };
@@ -133,7 +136,12 @@ function ExperienceEditor({
             value={startYear}
             onChange={(e) => {
               setStartYear(e.target.value);
-              update({ years: { start: Number(e.target.value) || 0, end: endYear === "Present" ? "Present" : Number(endYear) || 0 } });
+              update({
+                years: {
+                  start: Number(e.target.value) || 0,
+                  end: endYear === "Present" ? "Present" : Number(endYear) || 0,
+                },
+              });
             }}
             placeholder={`${new Date().getFullYear()}`}
           />
@@ -144,7 +152,10 @@ function ExperienceEditor({
             value={endYear}
             onChange={(e) => {
               setEndYear(e.target.value);
-              const end = e.target.value === "Present" ? "Present" : Number(e.target.value) || 0;
+              const end =
+                e.target.value === "Present"
+                  ? "Present"
+                  : Number(e.target.value) || 0;
               update({ years: { start: Number(startYear) || 0, end } });
             }}
             placeholder="Present"
@@ -370,9 +381,7 @@ function SkillEditor({
             />
           </DialogPanel>
           <DialogFooter>
-            <DialogClose
-              render={<Button variant="ghost" />}
-            >
+            <DialogClose render={<Button variant="ghost" />}>
               cancel
             </DialogClose>
             <Button
@@ -419,10 +428,7 @@ function EducationEditor({
   return (
     <div className="space-y-4">
       <Label className="inline-flex items-center gap-3 cursor-pointer">
-        <Switch
-          checked={enabled}
-          onCheckedChange={handleToggle}
-        />
+        <Switch checked={enabled} onCheckedChange={handleToggle} />
         Include education section
       </Label>
       {education && (
@@ -487,9 +493,11 @@ export default function EditResumePage() {
   const removeResume = useMutation(api.resumes.remove);
 
   const [draft, setDraft] = useState<ResumeData>(blankResume);
-  const [selectedJobPosting, setSelectedJobPosting] = useState<Id<"jobPostings"> | null>(null);
+  const [selectedJobPosting, setSelectedJobPosting] =
+    useState<Id<"jobPostings"> | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const loadResume = useCallback(() => {
     if (!resume) return;
@@ -648,7 +656,40 @@ export default function EditResumePage() {
 
           {/* Job Posting */}
           <section>
-            <SectionHeader title="Job Posting" />
+            <SectionHeader title="Job Posting">
+              {!resume.isFrontFacing && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={generating}
+                  onClick={async () => {
+                    setGenerating(true);
+                    try {
+                      const res = await fetch("/api/resumes/generate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          jobPostingId: selectedJobPosting ?? undefined,
+                        }),
+                      });
+                      if (!res.ok) {
+                        throw new Error(await res.text());
+                      }
+                      const data: ResumeData = await res.json();
+                      setDraft(data);
+                      setDirty(true);
+                    } catch (err) {
+                      console.error("Generation failed:", err);
+                    } finally {
+                      setGenerating(false);
+                    }
+                  }}
+                >
+                  <Sparkles className="size-3.5" />
+                  {generating ? "generating..." : "generate"}
+                </Button>
+              )}
+            </SectionHeader>
             {resume.isFrontFacing ? (
               <p className="text-xs text-muted-foreground lowercase">
                 The live resume cannot be linked to a job posting.
@@ -657,7 +698,9 @@ export default function EditResumePage() {
               <select
                 value={selectedJobPosting ?? ""}
                 onChange={(e) => {
-                  setSelectedJobPosting((e.target.value || null) as Id<"jobPostings"> | null);
+                  setSelectedJobPosting(
+                    (e.target.value || null) as Id<"jobPostings"> | null,
+                  );
                   setDirty(true);
                 }}
                 className="w-full rounded-none bg-transparent px-3 py-2 text-sm lowercase focus:outline-none"
@@ -674,91 +717,91 @@ export default function EditResumePage() {
 
           {/* Editor Content */}
           <div className="space-y-10">
-              {/* Profile */}
-              <section>
-                <SectionHeader title="Profile" />
-                <Textarea
-                  value={draft.profile}
-                  onChange={(e) => updateField("profile", e.target.value)}
-                  placeholder="Write a brief professional summary..."
-                  rows={4}
-                />
-              </section>
+            {/* Profile */}
+            <section>
+              <SectionHeader title="Profile" />
+              <Textarea
+                value={draft.profile}
+                onChange={(e) => updateField("profile", e.target.value)}
+                placeholder="Write a brief professional summary..."
+                rows={4}
+              />
+            </section>
 
-              {/* Experiences */}
-              <section className="space-y-4">
-                <SectionHeader title="Experiences" />
+            {/* Experiences */}
+            <section className="space-y-4">
+              <SectionHeader title="Experiences" />
 
-                <div className="space-y-4">
-                  {draft.experiences.map((exp, index) => (
-                    <div key={index} className="relative">
-                      <div className="absolute -left-6 top-4 flex flex-col gap-0.5">
-                        <Button
-                          type="button"
-                          onClick={() => moveExperience(index, "up")}
-                          disabled={index === 0}
-                          className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-20 -ml-2"
-                          title="Move up"
-                          variant="ghost"
-                        >
-                          ▲
-                        </Button>
-                        <Button
-                          type="button"
-                          onClick={() => moveExperience(index, "down")}
-                          disabled={index === draft.experiences.length - 1}
-                          className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-20 -ml-2"
-                          title="Move down"
-                          variant="ghost"
-                        >
-                          ▼
-                        </Button>
-                      </div>
-                      <ExperienceEditor
-                        experience={exp}
-                        index={index}
-                        onChange={(i, updated) => {
-                          setDraft((prev) => ({
-                            ...prev,
-                            experiences: prev.experiences.map((e, j) =>
-                              j === i ? updated : e,
-                            ),
-                          }));
-                          setDirty(true);
-                        }}
-                        onRemove={removeExperience}
-                      />
+              <div className="space-y-4">
+                {draft.experiences.map((exp, index) => (
+                  <div key={index} className="relative">
+                    <div className="absolute -left-6 top-4 flex flex-col gap-0.5">
+                      <Button
+                        type="button"
+                        onClick={() => moveExperience(index, "up")}
+                        disabled={index === 0}
+                        className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-20 -ml-2"
+                        title="Move up"
+                        variant="ghost"
+                      >
+                        ▲
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => moveExperience(index, "down")}
+                        disabled={index === draft.experiences.length - 1}
+                        className="text-muted-foreground hover:text-foreground transition-colors disabled:opacity-20 -ml-2"
+                        title="Move down"
+                        variant="ghost"
+                      >
+                        ▼
+                      </Button>
                     </div>
-                  ))}
-                </div>
-                <Button
-                  variant="ghost"
-                  className="w-full h-40 border border-border/50"
-                  onClick={addExperience}
-                >
-                  <Plus className="size-3.5" />
-                  add
-                </Button>
-              </section>
+                    <ExperienceEditor
+                      experience={exp}
+                      index={index}
+                      onChange={(i, updated) => {
+                        setDraft((prev) => ({
+                          ...prev,
+                          experiences: prev.experiences.map((e, j) =>
+                            j === i ? updated : e,
+                          ),
+                        }));
+                        setDirty(true);
+                      }}
+                      onRemove={removeExperience}
+                    />
+                  </div>
+                ))}
+              </div>
+              <Button
+                variant="ghost"
+                className="w-full h-40 border border-border/50"
+                onClick={addExperience}
+              >
+                <Plus className="size-3.5" />
+                add
+              </Button>
+            </section>
 
-              {/* Skills */}
-              <section>
-                <SectionHeader title="Skills" />
-                <SkillEditor
-                  skills={draft.skills}
-                  onChange={(skills) => updateField("skills", skills)}
-                />
-              </section>
+            {/* Skills */}
+            <section>
+              <SectionHeader title="Skills" />
+              <SkillEditor
+                skills={draft.skills}
+                onChange={(skills) => updateField("skills", skills)}
+              />
+            </section>
 
-              {/* Education */}
-              <section>
-                <SectionHeader title="Education" />
-                <EducationEditor
-                  education={draft.education}
-                  onChange={(education) => updateField("education", education)}
-                />
-              </section>
-            </div>
+            {/* Education */}
+            <section>
+              <SectionHeader title="Education" />
+              <EducationEditor
+                education={draft.education}
+                onChange={(education) => updateField("education", education)}
+              />
+            </section>
+          </div>
 
           {/* Bottom Save Bar */}
           {dirty && (

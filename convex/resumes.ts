@@ -1,6 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 export const create = mutation({
   args: {
@@ -35,13 +34,11 @@ export const list = query({
 export const getFrontFacing = query({
   args: {},
   handler: async (ctx) => {
-    return (
-      await ctx.db
-        .query("resumes")
-        .filter((q) => q.eq(q.field("isFrontFacing"), true))
-        .order("desc")
-        .collect()
-    )[0];
+    return await ctx.db
+      .query("resumes")
+      .withIndex("by_isFrontFacing", (q) => q.eq("isFrontFacing", true))
+      .order("desc")
+      .first();
   },
 });
 
@@ -99,7 +96,7 @@ export const getPublic = query({
     }
     return await ctx.db
       .query("resumes")
-      .filter((q) => q.eq(q.field("isFrontFacing"), true))
+      .withIndex("by_isFrontFacing", (q) => q.eq("isFrontFacing", true))
       .order("desc")
       .first();
   },
@@ -114,7 +111,7 @@ export const setFrontFacing = mutation({
     }
     const current = await ctx.db
       .query("resumes")
-      .filter((q) => q.eq(q.field("isFrontFacing"), true))
+      .withIndex("by_isFrontFacing", (q) => q.eq("isFrontFacing", true))
       .first();
     if (current && current._id !== args.id) {
       await ctx.db.patch(current._id, { isFrontFacing: false });

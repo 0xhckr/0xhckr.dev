@@ -85,6 +85,20 @@ export const remove = mutation({
   },
 });
 
+export const getPublic = query({
+  args: { id: v.optional(v.id("resumes")) },
+  handler: async (ctx, args) => {
+    if (args.id) {
+      return await ctx.db.get(args.id);
+    }
+    return await ctx.db
+      .query("resumes")
+      .filter((q) => q.eq(q.field("isFrontFacing"), true))
+      .order("desc")
+      .first();
+  },
+});
+
 export const setFrontFacing = mutation({
   args: { id: v.id("resumes") },
   handler: async (ctx, args) => {

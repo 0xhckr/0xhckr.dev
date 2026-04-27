@@ -1,19 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { ResumeData } from "~/lib/resume";
+import { Button } from "~/components/ui/button";
+import { Plus } from "lucide-react";
 
 export default function AdminResumesPage() {
   const resumes = useQuery(api.resumes.list);
+  const createResume = useMutation(api.resumes.create);
+
+  const handleCreate = async () => {
+    const id = await createResume({ content: JSON.stringify({ profile: "", experiences: [], skills: [], education: null }) });
+    window.location.href = `/admin/resumes/${id}`;
+  };
 
   return (
     <main id="main-content" tabIndex={-1}>
       <div className="tw-content flex min-h-screen flex-col items-center px-4 pt-admin-navbar py-16 sm:px-8">
-        <h1 className="mb-8 text-2xl font-semibold tracking-tight lowercase">
-          Manage Resumes
-        </h1>
+        <div className="flex items-center justify-between w-full max-w-2xl mb-8">
+          <h1 className="text-2xl font-semibold tracking-tight lowercase">
+            Manage Resumes
+          </h1>
+          <Button
+            onClick={handleCreate}
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Create resume"
+          >
+            <Plus className="size-4" />
+          </Button>
+        </div>
 
         {resumes === undefined && (
           <p className="text-muted-foreground lowercase">Loading...</p>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { ResumeData } from "~/lib/resume";
+import { DownloadResumeButton } from "~/components/download-resume-button";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 
@@ -59,12 +60,15 @@ export default function AdminResumesPage() {
               }
 
               return (
-                <Link
+                <div
                   key={resume._id}
-                  href={`/admin/resumes/${resume._id}`}
-                  className="block rounded-lg border border-border p-4 transition-colors hover:border-foreground/20"
+                  className="relative rounded-lg border border-border p-4 transition-colors hover:border-foreground/20"
                 >
-                  <div className="flex items-center justify-between">
+                  <Link
+                    href={`/admin/resumes/${resume._id}`}
+                    className="absolute inset-0"
+                  />
+                  <div className="flex items-center justify-between relative">
                     <span className="text-sm text-muted-foreground">
                       {new Date(resume.createdAt).toLocaleDateString(
                         undefined,
@@ -76,6 +80,7 @@ export default function AdminResumesPage() {
                       )}
                     </span>
                     <div className="flex items-center gap-2">
+                      {data && <DownloadResumeButton data={data} />}
                       {resume.jobPosting && (
                         <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-500">
                           {(() => {
@@ -94,7 +99,7 @@ export default function AdminResumesPage() {
                   {data && (
                     <p className="mt-2 text-sm line-clamp-3">{data.profile}</p>
                   )}
-                </Link>
+                </div>
               );
             })}
           </div>

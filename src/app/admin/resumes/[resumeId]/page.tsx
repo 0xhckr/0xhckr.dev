@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { DownloadResumeButton } from "~/components/download-resume-button";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -640,7 +641,9 @@ export default function EditResumePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2" />
+            <div className="flex items-center gap-2">
+              <DownloadResumeButton data={draft} />
+            </div>
           </div>
 
           {/* Actions Bar */}

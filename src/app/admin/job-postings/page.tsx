@@ -58,7 +58,7 @@ export default function AdminJobPostingsPage() {
               <Link
                 key={posting._id}
                 href={`/admin/job-postings/${posting._id}`}
-                className="block rounded-lg border border-border p-4 transition-colors hover:border-foreground/20"
+                className="block p-4 hover:bg-foreground/5"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">

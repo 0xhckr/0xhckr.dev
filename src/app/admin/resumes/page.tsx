@@ -62,7 +62,7 @@ export default function AdminResumesPage() {
               return (
                 <div
                   key={resume._id}
-                  className="relative rounded-lg border border-border p-4 transition-colors hover:border-foreground/20"
+                  className="relative p-4 hover:bg-foreground/5"
                 >
                   <Link
                     href={`/admin/resumes/${resume._id}`}

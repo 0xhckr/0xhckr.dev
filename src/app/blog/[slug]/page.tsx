@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { marked } from "marked";
 import { PageHeading } from "~/components/page-heading";
 import { getAllSlugs, getPostBySlug } from "~/lib/blog";
 import { generatePageMetadata } from "~/lib/metadata";
@@ -36,13 +36,14 @@ export default async function BlogPost({ params }: PageProps) {
     notFound();
   }
 
+  const html = await marked(post.content);
+
   return (
     <main id="main-content" tabIndex={-1}>
       <article className="mx-auto max-w-2xl px-4 pb-navbar pt-admin-navbar sm:px-8">
         <header className="mb-8">
           <PageHeading text={post.meta.title} inline />
           <time
-            // only show date, not time
             dateTime={post.meta.date}
             className="mt-2 block text-sm text-foreground/50 font-mono"
           >
@@ -53,9 +54,10 @@ export default async function BlogPost({ params }: PageProps) {
             })}
           </time>
         </header>
-        <div className="blog-prose max-w-none">
-          <MDXRemote source={post.content} />
-        </div>
+        <div
+          className="blog-prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </article>
     </main>
   );

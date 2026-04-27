@@ -1,15 +1,7 @@
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { generateText, Output } from "ai";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
-const openrouter = createOpenAICompatible({
-  name: "openrouter",
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPEN_ROUTER_API_KEY,
-  supportsStructuredOutputs: true,
-});
-
+const OPENROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY;
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
 
 if (!CONVEX_URL) {
@@ -64,6 +56,64 @@ const resumeDataSchema = z.object({
     .nullable(),
 });
 
+const RESUME_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    profile: { type: "string" },
+    experiences: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          company: { type: "string" },
+          years: {
+            type: "object",
+            properties: {
+              start: { type: "number" },
+              end: { oneOf: [{ type: "number" }, { const: "Present" }] },
+            },
+            required: ["start", "end"],
+          },
+          description: {
+            oneOf: [{ type: "string" }, { type: "array", items: { type: "string" } }],
+          },
+          address: { type: "string" },
+        },
+        required: ["title", "company", "years", "description"],
+      },
+    },
+    skills: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          category: { type: "string" },
+          name: { type: "string" },
+          isExpert: { type: "boolean" },
+        },
+        required: ["category", "name", "isExpert"],
+      },
+    },
+    education: {
+      oneOf: [
+        { type: "null" },
+        {
+          type: "object",
+          properties: {
+            universityName: { type: "string" },
+            progression: { type: "string" },
+            degreeName: { type: "string" },
+            gpa: { type: "string" },
+          },
+          required: ["universityName", "progression", "degreeName"],
+        },
+      ],
+    },
+  },
+  required: ["profile", "experiences", "skills", "education"],
+};
+
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { jobPostingId } = body as { jobPostingId?: string };
@@ -103,16 +153,41 @@ Instructions:
 - Reorder and emphasize relevant experiences
 - Keep all factual information accurate — do not invent experiences, skills, or qualifications
 - Adjust the skills section to highlight the most relevant skills for this role, but do not add skills that aren't in the master resume
-- Output must match the ResumeData schema exactly`;
+- Output must match the JSON schema exactly`;
 
   try {
-    const result = await generateText({
-      model: openrouter.chatModel("anthropic/claude-haiku-4.5"),
-      output: Output.object({ schema: resumeDataSchema }),
-      prompt,
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "anthropic/claude-haiku-4.5",
+        messages: [{ role: "user", content: prompt }],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "resume",
+            strict: true,
+            schema: RESUME_JSON_SCHEMA,
+          },
+        },
+      }),
     });
 
-    return Response.json(result.output);
+    if (!res.ok) {
+      throw new Error(`OpenRouter API error: ${res.status} ${await res.text()}`);
+    }
+
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error("No content in OpenRouter response");
+    }
+
+    const parsed = resumeDataSchema.parse(JSON.parse(content));
+    return Response.json(parsed);
   } catch (err) {
     console.error("Resume generation failed:", err);
     return Response.json(

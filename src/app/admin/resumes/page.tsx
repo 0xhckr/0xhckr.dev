@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 
 export default function AdminResumesPage() {
   const resumes = useQuery(api.resumes.list);
+  const jobPostings = useQuery(api.jobPostings.list);
   const createResume = useMutation(api.resumes.create);
 
   const handleCreate = async () => {
@@ -74,11 +75,21 @@ export default function AdminResumesPage() {
                         },
                       )}
                     </span>
-                    {resume.isFrontFacing && (
-                      <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-500">
-                        Live
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {resume.jobPosting && (
+                        <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-500">
+                          {(() => {
+                            const jp = jobPostings?.find((j) => j._id === resume.jobPosting);
+                            return jp ? `${jp.title}${jp.company ? ` @ ${jp.company}` : ""}` : "Unknown";
+                          })()}
+                        </span>
+                      )}
+                      {resume.isFrontFacing && (
+                        <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-500">
+                          Live
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {data && (
                     <p className="mt-2 text-sm line-clamp-3">{data.profile}</p>

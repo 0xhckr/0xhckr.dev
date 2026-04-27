@@ -64,6 +64,7 @@ Instructions:
 - Use a confident but not arrogant tone
 - Keep the cover letter concise - ideally 3-4 paragraphs
 - Address the hiring manager if the company is known, otherwise use a general greeting
+- Do not use em dashes (—) anywhere; use regular dashes (-) instead
 - Output must be a JSON object with a single "content" field containing the cover letter text as a string`;
 
   try {

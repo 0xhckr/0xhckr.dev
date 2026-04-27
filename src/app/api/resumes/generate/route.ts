@@ -152,7 +152,8 @@ Instructions:
 - Output must match the JSON schema exactly
 - For years.end, use a string number like "2024" or "Present"
 - For description, always use an array of strings
-- For education, set isNull to true if no education should be shown, otherwise provide the fields and set isNull to false`;
+- For education, set isNull to true if no education should be shown, otherwise provide the fields and set isNull to false
+- Do not use em dashes (—) anywhere; use regular dashes (-) instead`;
 
   try {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {

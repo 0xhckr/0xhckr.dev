@@ -1,58 +1,23 @@
-# 0xhckr.dev
+<div align="center">
 
-Personal portfolio built with Next.js, React, Tailwind CSS, and GSAP.
+# About Me
 
-## Stack
+Hey! I'm **Mohammad**!
 
-- **Next.js** — App Router
-- **React**
-- **Tailwind CSS** — CSS-first config via `@theme inline`
-- **GSAP** — animations
-- **Biome** — linting and formatting
-- **Nix** — dev shell via `flake.nix`
-- **pnpm** — package management
+I'm a software developer interested in
 
-## Getting Started
+Web Dev &nbsp;&nbsp; • &nbsp;&nbsp; Desktop Apps &nbsp;&nbsp; • &nbsp;&nbsp; Mobile Apps
 
-Requires **Node.js 22** and **pnpm**.
+Servers &nbsp;&nbsp; • &nbsp;&nbsp; Security &nbsp;&nbsp; • &nbsp;&nbsp; DevOps
 
-```bash
-pnpm install
-pnpm dev
-```
+[0xhckr.dev](https://0xhckr.dev) &nbsp;&nbsp; • &nbsp;&nbsp; [LinkedIn](https://linkedin.com/in/mohammadalahdal)
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+![hackr-sh's Top Languages](https://git-stats.alahdal.ca/api/top-langs/?username=0xhckr&layout=compact&theme=rose_pine)
 
-Alternatively, enter the Nix dev shell:
+![hackr-sh's GitHub stats](https://git-stats.alahdal.ca/api?username=0xhckr&theme=rose_pine&rank_icon=percentile)
 
-```bash
-direnv allow
-```
+## Currently Working On
 
-This provides `pnpm`, `nodejs_22`, and `biome`.
+[thenix.guide](https://thenix.guide) &nbsp;&nbsp; • &nbsp;&nbsp; [stoa.gg](https://stoa.gg)
 
-## Scripts
-
-| Command          | Description            |
-| ---------------- | ---------------------- |
-| `pnpm dev`       | Start dev server       |
-| `pnpm build`     | Production build       |
-| `pnpm start`     | Start production server|
-| `pnpm lint`      | Run Biome linter       |
-| `pnpm format`    | Format with Biome      |
-
-## Project Structure
-
-```
-src/
-  app/             # App Router pages and layout
-  components/      # React components
-  lib/             # Utilities
-public/            # Static assets
-```
-
-Internal imports use the `~/` path alias mapped to `./src/*`.
-
----
-
-*more things to come~!*
+</div>

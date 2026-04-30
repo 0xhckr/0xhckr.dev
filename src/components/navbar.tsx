@@ -19,7 +19,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const desktopRef = useRef<HTMLDivElement>(null);
   const mobileToggleRef = useRef<HTMLButtonElement>(null);
@@ -152,7 +152,7 @@ export function Navbar() {
               ))}
             </Link>
           ))}
-          {isSignedIn && (
+          {isLoaded && isSignedIn && (
             <SignOutButton redirectUrl="/">
               <span
                 className={cn(
@@ -167,7 +167,7 @@ export function Navbar() {
               </span>
             </SignOutButton>
           )}
-          {!isSignedIn && (
+          {isLoaded && !isSignedIn && (
             <SignInButton mode="modal">
               <span
                 className={cn(

@@ -18,7 +18,7 @@ const adminLinks = [
 
 export function AdminNavbar() {
   const pathname = usePathname();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -53,7 +53,7 @@ export function AdminNavbar() {
         className="block font-mono text-sm text-foreground/50 select-none mr-4 mt-4"
       >
         <div className="inline-flex items-center gap-4">
-          {isSignedIn && adminLinks.map((link) => (
+          {isLoaded && isSignedIn && adminLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

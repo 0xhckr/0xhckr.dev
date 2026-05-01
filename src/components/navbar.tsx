@@ -7,6 +7,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "~/lib/util";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(useGSAP);
 
@@ -19,6 +21,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const desktopRef = useRef<HTMLDivElement>(null);
@@ -167,7 +170,12 @@ export function Navbar() {
               </span>
             </SignOutButton>
           ) : (
-            <SignInButton mode="modal">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                router.push("/sign-in");
+              }}
+            >
               <span
                 className={cn(
                   "inline-flex cursor-pointer hover:text-foreground/80 transition-colors",
@@ -179,7 +187,7 @@ export function Navbar() {
                   </span>
                 ))}
               </span>
-            </SignInButton>
+            </Button>
           )}
         </span>
       </div>

@@ -14,6 +14,17 @@ function safeHostname(url: string): string | null {
   }
 }
 
+// Only allow http(s) URLs to be used as hrefs - anything else
+// (javascript:, data:, ...) is an XSS vector.
+function safeUrl(url: string): string | null {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "https:" || protocol === "http:" ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 function FaviconImg({ url }: { url: string }) {
   const hostname = safeHostname(url);
   if (!hostname) return null;
@@ -53,29 +64,33 @@ export function VouchesGrid() {
   return (
     <Reveal className="mt-16 sm:mt-20">
       <div className="grid grid-cols-1 gap-px border hairline bg-border sm:grid-cols-2">
-        {vouches.map((vouch) => (
-          <a
-            key={vouch._id}
-            href={vouch.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="reveal-item group relative block bg-background px-6 py-6 transition-colors duration-300 hover:bg-foreground/[0.03]"
-          >
-            <DitherHover />
-            <div className="relative flex items-center gap-4">
-              <FaviconImg url={vouch.url} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-sans text-sm font-medium text-foreground transition-colors group-hover:text-accent">
-                  {vouch.name}
-                </p>
-                <p className="truncate font-mono text-xs text-muted-foreground">
-                  {safeHostname(vouch.url) ?? vouch.url}
-                </p>
+        {vouches.map((vouch) => {
+          const href = safeUrl(vouch.url);
+          if (!href) return null;
+          return (
+            <a
+              key={vouch._id}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="reveal-item group relative block bg-background px-6 py-6 transition-colors duration-300 hover:bg-foreground/[0.03]"
+            >
+              <DitherHover />
+              <div className="relative flex items-center gap-4">
+                <FaviconImg url={vouch.url} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-sans text-sm font-medium text-foreground transition-colors group-hover:text-accent">
+                    {vouch.name}
+                  </p>
+                  <p className="truncate font-mono text-xs text-muted-foreground">
+                    {safeHostname(vouch.url) ?? vouch.url}
+                  </p>
+                </div>
+                <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
               </div>
-              <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
-            </div>
-          </a>
-        ))}
+            </a>
+          );
+        })}
       </div>
     </Reveal>
   );

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { fetchAuthQuery, isAuthenticated } from "~/lib/auth-server";
+import {
+  ADMIN_EMAIL,
+  fetchAuthQuery,
+  isAuthenticated,
+} from "~/lib/auth-server";
 import { generatePageMetadata } from "~/lib/metadata";
 import { api } from "../../../../convex/_generated/api";
 
@@ -9,8 +13,6 @@ export const metadata: Metadata = generatePageMetadata({
   description: "Manage resumes.",
   path: "/admin/resumes",
 });
-
-const ALLOWED_EMAIL = "hackr@hackr.sh";
 
 export default async function AdminResumesLayout({
   children,
@@ -23,7 +25,7 @@ export default async function AdminResumesLayout({
 
   const user = await fetchAuthQuery(api.auth.getCurrentUser);
 
-  if (user.email !== ALLOWED_EMAIL) {
+  if (user?.email !== ADMIN_EMAIL) {
     redirect("/unauthorized");
   }
 

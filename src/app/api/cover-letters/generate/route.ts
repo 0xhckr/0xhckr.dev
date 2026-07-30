@@ -1,41 +1,25 @@
 import type { NextRequest } from "next/server";
-import { isAuthenticated } from "~/lib/auth-server";
+import { fetchAuthQuery, isAdmin } from "~/lib/auth-server";
+import { api } from "../../../../../convex/_generated/api";
+import type { Id } from "../../../../../convex/_generated/dataModel";
 
 const OPENROUTER_API_KEY = process.env.OPEN_ROUTER_API_KEY;
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL;
-
-if (!CONVEX_URL) {
-  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
-}
-
-async function convexQuery(
-  functionName: string,
-  args: Record<string, unknown>,
-) {
-  const url = `${CONVEX_URL}/api/query`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path: functionName, args }),
-  });
-  if (!res.ok) {
-    throw new Error(`Convex query failed: ${res.status} ${await res.text()}`);
-  }
-  const { value } = await res.json();
-  return value;
-}
 
 export async function POST(request: NextRequest) {
-  if (!(await isAuthenticated())) {
-    return Response.json({ error: "Not authenticated" }, { status: 401 });
+  if (!(await isAdmin())) {
+    return Response.json({ error: "Not authorized" }, { status: 403 });
   }
 
   const body = await request.json();
   const { jobPostingId } = body as { jobPostingId?: string };
 
   const [masterResume, jobPosting] = await Promise.all([
-    convexQuery("resumes:getPublic", {}),
-    jobPostingId ? convexQuery("jobPostings:get", { id: jobPostingId }) : null,
+    fetchAuthQuery(api.resumes.getPublic, {}),
+    jobPostingId
+      ? fetchAuthQuery(api.jobPostings.get, {
+          id: jobPostingId as Id<"jobPostings">,
+        })
+      : null,
   ]);
 
   if (!masterResume) {

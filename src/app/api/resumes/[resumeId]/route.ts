@@ -13,7 +13,6 @@ async function convexQuery(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ path: functionName, args }),
   });
-  console.log(res);
   if (!res.ok) {
     throw new Error(`Convex query failed: ${res.status} ${await res.text()}`);
   }

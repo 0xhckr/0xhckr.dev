@@ -31,9 +31,9 @@ The Nix flake (`flake.nix`) provides `pnpm`, `nodejs_22`, and `biome` in the dev
 - Local component install in `convex/betterAuth/` (passkey needs schema changes, so the npm component can't be used). Regenerate schema after plugin changes: `cd convex/betterAuth && npx auth generate --output schema.ts -y`
 - Server config: `convex/auth.ts` (`createAuthOptions`), client: `src/lib/auth-client.ts`, server helpers: `src/lib/auth-server.ts` (`isAuthenticated`, `getToken`, `fetchAuthQuery`, ...)
 - Sign-in is passkey-only (`/sign-in`). First-passkey bootstrap is pre-auth but self-locks: it requires `PASSKEY_SETUP_TOKEN` (Convex env var) and only works while zero passkeys exist
-- Admin gating: `src/proxy.ts` (Next 16 proxy convention, optimistic cookie check) + per-layout email allowlist (`hackr@hackr.sh`) in `src/app/admin/*/layout.tsx`
+- Admin gating: `src/proxy.ts` (Next 16 proxy convention, optimistic cookie check) + per-layout email allowlist in `src/app/admin/*/layout.tsx`. The allowlist email is centralized as `ADMIN_EMAIL` in `src/lib/auth-server.ts`; privileged API routes must use the `isAdmin()` helper from the same module (not just `isAuthenticated()`)
 - Env vars on the Convex deployment (set via `npx convex env set`): `BETTER_AUTH_SECRET`, `SITE_URL`, `PASSKEY_SETUP_TOKEN`
-- Pin `better-auth` to `~1.6.15` — `@convex-dev/better-auth` types break on newer 1.6.x. `@better-fetch/fetch@1.1.21` and `@better-auth/utils@0.4.1` are direct deps to keep peer type resolution unified
+- Pin `better-auth` to exactly `1.6.15` — `@convex-dev/better-auth` (0.12.5, latest) types break on newer 1.6.x. This means GHSA-qq9h-g4jm-xgf3 (account takeover via magic-link/email-OTP, fixed in 1.6.22) stays in `pnpm audit` output: it is NOT exploitable here because the deployment is passkey-only and neither the magic-link nor email-OTP plugin is enabled. Revisit the pin when `@convex-dev/better-auth` supports newer better-auth. `@better-auth/passkey@1.6.15`, `@better-fetch/fetch@1.1.21` and `@better-auth/utils@0.4.1` are direct deps to keep peer type resolution unified
 
 ## Architecture
 
@@ -45,7 +45,9 @@ src/
 convex/
   betterAuth/      # Locally-installed Better Auth component (schema, adapter)
 worker/
-  index.ts         # Cloudflare Worker entry for vinext
+  index.ts         # Cloudflare Worker entry for vinext; also injects baseline
+                   # security headers (nosniff, DENY framing, HSTS, Referrer/
+                   # Permissions-Policy) on every response
 public/            # Static assets
 ```
 
@@ -72,6 +74,7 @@ Install all new UI components from **COSS UI** (`https://coss.com/ui`) instead o
 - **Biome domains**: The linter has Next.js and React recommended rule domains enabled — it will catch Next-specific issues.
 - **`noUnknownAtRules` is off**: Biome's CSS lint rule for unknown at-rules is disabled because Tailwind v4 uses at-rules like `@theme` that Biome doesn't recognize.
 - **`VINEXT_KV_CACHE`**: the KV namespace id in `wrangler.jsonc` must be created with `npx wrangler kv namespace create VINEXT_KV_CACHE` and pasted in before deploying.
+- **Security `pnpm.overrides`** in `package.json` pin patched versions of transitive deps (`next`, `hono`, `js-yaml`, `postcss`, `dompurify`, `brace-expansion`, `fast-uri`, `sharp`). Keep them — removing them reintroduces known CVEs. The remaining `pnpm audit` findings all come from the `shadcn` CLI (devDependency, never imported or deployed) plus the documented `better-auth` pin above.
 - **MDX blog posts** are read from `content/` via `fs` + `gray-matter` (no `@next/mdx` — vinext doesn't run webpack loaders).
 
 <!-- convex-ai-start -->

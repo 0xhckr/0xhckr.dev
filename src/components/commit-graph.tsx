@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ContributionDay {
   date: string;
@@ -15,33 +15,7 @@ export function CommitGraph() {
   const ref = useRef<HTMLDivElement>(null);
   const [days, setDays] = useState<ContributionDay[]>([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
-  const [hover, setHover] = useState<{
-    day: ContributionDay;
-    idx: number;
-    x: number;
-    y: number;
-  } | null>(null);
-  const tipRef = useRef<HTMLDivElement>(null);
-  const [tipPos, setTipPos] = useState<{ left: number; top: number } | null>(
-    null,
-  );
-
-  useLayoutEffect(() => {
-    const el = tipRef.current;
-    if (!hover || !el) {
-      setTipPos(null);
-      return;
-    }
-    const { width, height } = el.getBoundingClientRect();
-    const pad = 8;
-    const cx = Math.min(
-      Math.max(hover.x, width / 2 + pad),
-      window.innerWidth - width / 2 - pad,
-    );
-    let top = hover.y - height - 10;
-    if (top < pad) top = hover.y + 16;
-    setTipPos({ left: cx - width / 2, top });
-  }, [hover]);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,58 +120,106 @@ export function CommitGraph() {
           style={{ transform: `translateX(${offsetX}px)` }}
           onMouseMove={(e) => {
             const t = e.target;
-            if (t instanceof SVGRectElement) {
-              const idx = Number(t.getAttribute("data-i"));
-              const c = cells[idx];
-              if (c?.day)
-                setHover({ day: c.day, idx, x: e.clientX, y: e.clientY });
-              else setHover(null);
+            if (!(t instanceof SVGRectElement)) {
+              setHoverIdx(null);
+              return;
             }
+            const idx = Number(t.getAttribute("data-i"));
+            setHoverIdx(cells[idx]?.day ? idx : null);
           }}
-          onMouseLeave={() => setHover(null)}
+          onMouseLeave={() => setHoverIdx(null)}
         >
+          <style>{`
+            .cg-cell {
+              transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+            }
+            .cg-cell.flipped {
+              transform: scaleY(-1);
+            }
+            .cg-count {
+              opacity: 0;
+              transition: opacity 0.1s linear;
+              pointer-events: none;
+            }
+            .cg-cell.flipped .cg-count {
+              opacity: 1;
+              transition: opacity 0.12s linear 0.23s;
+            }
+          `}</style>
           {cells.map((c, i) => {
             const base =
               !c.day || c.day.level === 0
                 ? LEVEL_OPACITY[0]
                 : LEVEL_OPACITY[c.day.level];
+            const flipped = i === hoverIdx && !!c.day;
+            const cx = c.x + cell / 2;
+            const cy = c.y + cell / 2;
             return (
-              <rect
+              <g
                 key={c.day ? c.day.date : `pad-${c.x}`}
-                data-i={i}
-                x={c.x}
-                y={c.y}
-                width={cell}
-                height={cell}
-                fill="currentColor"
-                opacity={hover && hover.idx !== i ? base * 0.5 : base}
-                className={
-                  !c.day || c.day.level === 0
-                    ? "text-foreground transition-opacity duration-150"
-                    : "text-accent transition-opacity duration-150"
-                }
-              />
+                className={flipped ? "cg-cell flipped" : "cg-cell"}
+                style={{ transformOrigin: `${cx}px ${cy}px` }}
+              >
+                <rect
+                  data-i={i}
+                  x={c.x}
+                  y={c.y}
+                  width={cell}
+                  height={cell}
+                  fill="currentColor"
+                  opacity={
+                    hoverIdx !== null && hoverIdx !== i ? base * 0.5 : base
+                  }
+                  className={
+                    !c.day || c.day.level === 0
+                      ? "text-foreground transition-opacity duration-150"
+                      : "text-accent transition-opacity duration-150"
+                  }
+                />
+                {c.day && (
+                  <text
+                    className="cg-count font-mono font-bold tabular-nums"
+                    x={cx}
+                    y={cy}
+                    transform={`translate(${cx} ${cy}) scale(1 -1) translate(${-cx} ${-cy})`}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    style={{
+                      fontSize: Math.max(6, Math.floor(cell * 0.48)),
+                      fill:
+                        c.day.level >= 3
+                          ? "var(--accent-foreground)"
+                          : "var(--foreground)",
+                    }}
+                  >
+                    {c.day.count}
+                  </text>
+                )}
+              </g>
             );
           })}
+          {/*
+            Static hit targets, one per day cell, layered above the flipping
+            groups so hover never depends on the animated geometry — otherwise
+            a slow/vertical approach loses hover mid-flip as the square
+            squashes away from under the cursor.
+          */}
+          {cells.map(
+            (c, i) =>
+              c.day && (
+                <rect
+                  key={`hit-${c.day.date}`}
+                  data-i={i}
+                  x={c.x}
+                  y={c.y}
+                  width={cell}
+                  height={cell}
+                  fill="transparent"
+                  stroke="none"
+                />
+              ),
+          )}
         </svg>
-      )}
-
-      {hover && (
-        <div
-          ref={tipRef}
-          className="pointer-events-none fixed z-50 border border-border bg-popover px-2.5 py-1.5 font-mono text-[0.625rem] whitespace-nowrap text-popover-foreground shadow-md"
-          style={
-            tipPos ?? { left: hover.x, top: hover.y, visibility: "hidden" }
-          }
-        >
-          <span className="text-accent">{hover.day.count}</span>{" "}
-          {hover.day.count === 1 ? "commit" : "commits"} on{" "}
-          {new Date(`${hover.day.date}T00:00:00`).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </div>
       )}
     </div>
   );

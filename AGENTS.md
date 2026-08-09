@@ -7,7 +7,7 @@ Personal portfolio/site built with **vinext** (Next.js 16 App Router API on Vite
 ## Essential Commands
 
 ```bash
-pnpm dev          # Start vinext dev server (localhost:3000, runs in workerd)
+pnpm dev          # Start vinext dev server (localhost:3002, runs in workerd)
 pnpm build        # convex deploy + vinext build (production)
 pnpm start        # Serve the built Worker locally (wrangler dev)
 pnpm deploy       # Build + deploy to Cloudflare Workers (@vinext/cloudflare)

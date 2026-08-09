@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as coverLetters from "../coverLetters.js";
+import type * as guestbook from "../guestbook.js";
 import type * as http from "../http.js";
 import type * as jobPostings from "../jobPostings.js";
 import type * as resumes from "../resumes.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   coverLetters: typeof coverLetters;
+  guestbook: typeof guestbook;
   http: typeof http;
   jobPostings: typeof jobPostings;
   resumes: typeof resumes;

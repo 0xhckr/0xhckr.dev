@@ -9,7 +9,7 @@ import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
 
-const ADMIN_EMAIL = "hackr@hackr.sh";
+export const ADMIN_EMAIL = "hackr@hackr.sh";
 const ADMIN_NAME = "Mohammad Al-Ahdal";
 
 export const authComponent = createClient<DataModel, typeof authSchema>(
@@ -24,6 +24,14 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     appName: "0xhckr",
     baseURL: process.env.SITE_URL,
     database: authComponent.adapter(ctx),
+    // Guests sign in with GitHub only (guestbook). Passkey auth above remains
+    // the owner-only path. Env vars live on the Convex deployment.
+    socialProviders: {
+      github: {
+        clientId: process.env.GITHUB_CLIENT_ID as string,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      },
+    },
     plugins: [
       passkey({
         rpName: "0xhckr",

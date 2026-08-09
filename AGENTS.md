@@ -30,9 +30,10 @@ The Nix flake (`flake.nix`) provides `pnpm`, `nodejs_22`, and `biome` in the dev
 
 - Local component install in `convex/betterAuth/` (passkey needs schema changes, so the npm component can't be used). Regenerate schema after plugin changes: `cd convex/betterAuth && npx auth generate --output schema.ts -y`
 - Server config: `convex/auth.ts` (`createAuthOptions`), client: `src/lib/auth-client.ts`, server helpers: `src/lib/auth-server.ts` (`isAuthenticated`, `getToken`, `fetchAuthQuery`, ...)
-- Sign-in is passkey-only (`/sign-in`). First-passkey bootstrap is pre-auth but self-locks: it requires `PASSKEY_SETUP_TOKEN` (Convex env var) and only works while zero passkeys exist
-- Admin gating: `src/proxy.ts` (Next 16 proxy convention, optimistic cookie check) + per-layout email allowlist in `src/app/admin/*/layout.tsx`. The allowlist email is centralized as `ADMIN_EMAIL` in `src/lib/auth-server.ts`; privileged API routes must use the `isAdmin()` helper from the same module (not just `isAuthenticated()`)
-- Env vars on the Convex deployment (set via `npx convex env set`): `BETTER_AUTH_SECRET`, `SITE_URL`, `PASSKEY_SETUP_TOKEN`
+- Owner sign-in is passkey-only (`/sign-in`). Guests sign in with GitHub (social provider in `createAuthOptions`) — used by the `/guestbook`. A session is therefore always either the owner (passkey) or a GitHub guest; ownership is decided by email (`isOwnerEmail`) because it holds across both sign-in methods
+- First-passkey bootstrap is pre-auth but self-locks: it requires `PASSKEY_SETUP_TOKEN` (Convex env var) and only works while zero passkeys exist
+- Admin gating: `src/proxy.ts` (Next 16 proxy convention, optimistic cookie check) + per-layout email allowlist in `src/app/admin/*/layout.tsx`. The allowlist email is centralized as `ADMIN_EMAIL` in `src/lib/admin.ts` (re-exported from `src/lib/auth-server.ts`); privileged API routes must use the `isAdmin()` helper from `src/lib/auth-server.ts` (not just `isAuthenticated()`)
+- Env vars on the Convex deployment (set via `npx convex env set`): `BETTER_AUTH_SECRET`, `SITE_URL`, `PASSKEY_SETUP_TOKEN`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`. GitHub OAuth app callback URL is `<SITE_URL>/api/auth/callback/github` (i.e. `https://0xhckr.dev/...` prod, `http://localhost:3002/...` dev) — better-auth builds it from `SITE_URL`; the app's `/api/auth/[...all]` route proxies the callback to Convex. Dev and prod each need their own OAuth app + env values
 - Pin `better-auth` to exactly `1.6.15` — `@convex-dev/better-auth` (0.12.5, latest) types break on newer 1.6.x. This means GHSA-qq9h-g4jm-xgf3 (account takeover via magic-link/email-OTP, fixed in 1.6.22) stays in `pnpm audit` output: it is NOT exploitable here because the deployment is passkey-only and neither the magic-link nor email-OTP plugin is enabled. Revisit the pin when `@convex-dev/better-auth` supports newer better-auth. `@better-auth/passkey@1.6.15`, `@better-fetch/fetch@1.1.21` and `@better-auth/utils@0.4.1` are direct deps to keep peer type resolution unified
 
 ## Architecture
@@ -40,9 +41,11 @@ The Nix flake (`flake.nix`) provides `pnpm`, `nodejs_22`, and `biome` in the dev
 ```
 src/
   app/             # App Router (layout.tsx, page.tsx, globals.css)
+                   # /guestbook = public guestbook (GitHub-sign-in + notes feed)
   components/      # React components
-  lib/             # Utilities (cn helper, auth-client/auth-server)
+  lib/             # Utilities (cn helper, auth-client/auth-server, admin)
 convex/
+  guestbook.ts     # Guestbook list/sign/remove (owner can delete any entry)
   betterAuth/      # Locally-installed Better Auth component (schema, adapter)
 worker/
   index.ts         # Cloudflare Worker entry for vinext; also injects baseline

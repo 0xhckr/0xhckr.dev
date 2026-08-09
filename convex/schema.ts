@@ -26,4 +26,15 @@ export default defineSchema({
     url: v.string(),
     createdAt: v.number(),
   }),
+  guestbook: defineTable({
+    // Better Auth user id (from the betterAuth component, not an app table).
+    userId: v.string(),
+    // Denormalized at sign time - component tables can't be joined from the app.
+    name: v.string(),
+    image: v.optional(v.string()),
+    message: v.string(),
+    // True when the signer is the site owner, regardless of login method.
+    isOwner: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"]),
 });

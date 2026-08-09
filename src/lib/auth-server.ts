@@ -1,8 +1,9 @@
 import { convexBetterAuthNextJs } from "@convex-dev/better-auth/nextjs";
 import { ConvexError } from "convex/values";
 import { api } from "../../convex/_generated/api";
+import { ADMIN_EMAIL, isOwnerEmail } from "./admin";
 
-export const ADMIN_EMAIL = "hackr@hackr.sh";
+export { ADMIN_EMAIL, isOwnerEmail };
 
 const isAuthError = (error: unknown) => {
   const message =

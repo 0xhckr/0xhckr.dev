@@ -18,6 +18,7 @@ const navLinks = [
   { href: "/blog", label: "writing" },
   { href: "/resume", label: "resume" },
   { href: "/vouches", label: "vouches" },
+  { href: "/guestbook", label: "guestbook" },
 ];
 
 export function Navbar() {

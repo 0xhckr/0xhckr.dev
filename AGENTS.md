@@ -10,7 +10,7 @@ Personal portfolio/site built with **vinext** (Next.js 16 App Router API on Vite
 pnpm dev          # Start vinext dev server (localhost:3002, runs in workerd)
 pnpm build        # convex deploy + vinext build (production)
 pnpm start        # Serve the built Worker locally (wrangler dev)
-pnpm deploy       # Build + deploy to Cloudflare Workers (@vinext/cloudflare)
+pnpm deploy       # convex deploy (prod) + deploy the built Worker (@vinext/cloudflare); run pnpm build first if dist/ is stale
 pnpm lint         # Run Biome linter
 pnpm format       # Format code with Biome (writes in place)
 ```

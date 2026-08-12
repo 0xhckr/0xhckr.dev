@@ -51,7 +51,13 @@ const projects: { title: string; description: string; link?: string }[] = [
   {
     title: "gojo",
     description: "jj version control with a slick terminal ui.",
-    link: "https://github.com/0xhckr/gojo",
+    link: "https://gojo.rocks/",
+  },
+  {
+    title: "farabi.study",
+    description:
+      "a modern logic education platform — a successor to carnap with richer tooling.",
+    link: "https://farabi.study/",
   },
 ];
 

@@ -14,6 +14,11 @@ export const metadata: Metadata = generatePageMetadata({
 
 const projects: { title: string; description: string; link?: string }[] = [
   {
+    title: "co.codes",
+    description: "git hosting for humans and the agents they ride with.",
+    link: "https://co.codes",
+  },
+  {
     title: "stoa.gg",
     description: "a private communications platform like discord and slack.",
     link: "https://stoa.gg",

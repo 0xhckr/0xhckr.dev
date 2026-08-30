@@ -1,6 +1,11 @@
 export const projects: { title: string; href?: string; description: string }[] =
   [
     {
+      title: "co.codes",
+      href: "https://co.codes",
+      description: "Git hosting for humans and the agents they ride with.",
+    },
+    {
       title: "thenix.guide",
       href: "https://thenix.guide",
       description:

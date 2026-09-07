@@ -18,6 +18,6 @@ Servers &nbsp;&nbsp; • &nbsp;&nbsp; Security &nbsp;&nbsp; • &nbsp;&nbsp; Dev
 
 ## Currently Working On
 
-[thenix.guide](https://thenix.guide) &nbsp;&nbsp; • &nbsp;&nbsp; [rocky.systems](https://rocky.systems) • &nbsp;&nbsp; [itsasecret.dev](https://itsasecret.dev)
+[thenix.guide](https://thenix.guide) &nbsp;&nbsp; • &nbsp;&nbsp; [rocky.systems](https://rocky.systems) • &nbsp;&nbsp; [itsasecret.dev](https://itsasecret.dev) • &nbsp;&nbsp; [co.codes](https://co.codes)
 
 </div>
